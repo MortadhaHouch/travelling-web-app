@@ -1,0 +1,470 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: 0.25s;
+}
+:root{
+    --main-width:100vw;
+    --main-height:100vh;
+    --logo-width:50px;
+    --logo-height:50px;
+    --color-facebook:rgb(59, 89, 152);
+    --color-reddit:rgb(255, 69, 0);
+    --color-twitter:rgb(0,0,0);
+    --color-instagram:rgb(195, 42, 163);
+    --color-tiktok:rgb(1, 1, 1);
+    --color-whatsapp:rgb(7, 94, 84);
+    --main-color:#0d6efd;
+    --selection-background-color:rgba(13, 109, 253, 0.5);
+}
+*::selection{
+    background-color:var(--selection-background-color);
+    backdrop-filter: blur(20px);
+}
+html,body{
+    overscroll-behavior: none;
+}
+body{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow-x: hidden;
+}
+#root{
+    width: var(--main-width);
+    height: fit-content;
+    min-height: var(--main-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+header div img.logo{
+    width: var(--logo-width);
+    height: var(--logo-height);
+}
+header div ul .nav-item{
+    position: relative;
+}
+header nav div ul .nav-item::before{
+    position: absolute;
+    content: "";
+    bottom: 0;
+    left: 0;
+    width: 0;
+    background-color: white;
+    height: 2px;
+}
+header div ul .nav-item:hover::before{
+    width: 100%;
+    transition:width .25s;
+}
+header nav div ul .nav-item a.active{
+    border-bottom: 2px solid white;
+}
+main{
+    padding-block: 100px;
+    width: var(--main-width);
+    height: fit-content;
+    min-height: var(--main-height);
+    background-repeat: no-repeat;
+    object-fit: contain;
+    background-size: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+main form{
+    backdrop-filter: blur(10px);
+    border-top: 2px solid white;
+    border-right: 2px solid white;
+    border-radius: 15px;
+    padding: 15px;
+}
+main form div textarea{
+    resize: none;
+}
+main.loading{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+main.loading.paused{
+    clip-path: circle(0% at 50% 50%);
+    pointer-events: none;
+}
+main.loading.played{
+    clip-path: circle(100% at 50% 50%);
+    pointer-events: all;
+}
+main div.tab-content div.tab-pane{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 15px;
+}
+main div.tab-content div.tab-pane div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    position: relative;
+    border-radius: 15px;
+    width: 300px;
+    height: 400px;
+    overflow: hidden;
+    cursor: pointer;
+}
+main div.tab-content div.tab-pane div img{
+    width: 100%;
+    height: 100%;
+}
+main div.tab-content div.tab-pane div svg{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 5px;
+    border-radius: 50%;
+    stroke-width: 2px;
+}
+main div.tab-content div.tab-pane div svg:hover{
+    background-color: aliceblue;
+    stroke: magenta;
+}
+main div.tab-content div.tab-pane div:hover img{
+    transform: scale(1.1);
+    transition-timing-function: ease-in-out;
+    transition: 1s;
+}
+main.home{
+    width: 100vw;
+    height:fit-content;
+    gap: 30px;
+}
+main.home section{
+    width: 100vw;
+    height:100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+main.home section:first-child video{
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+main.home section:first-child div{
+    width: 400px;
+    height: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    border-top: 3px solid white;
+    border-right: 3px solid white;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    backdrop-filter: blur(30px);
+}
+main.home section:first-child div p{
+    font-weight: 600;
+    font-size: 25px;
+    color: white;
+}
+main.home section:first-child div div{
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    overflow: hidden;
+    position: absolute;
+    top:80%;
+    padding: 3px;
+}
+main.home section:first-child div div::before{
+    position: absolute;
+    content: "";
+    inset: auto;
+    width: 150%;
+    height: 50%;
+    background: linear-gradient(180deg,transparent,white,transparent);
+    z-index: 5;
+    animation-name:rotation;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+@keyframes rotation{
+    0%{
+        transform: rotateZ(0deg);
+    }
+    100%{
+        transform: rotateZ(360deg);
+    }
+}
+main.home section:first-child div div button{
+    padding: 15px 30px;
+    border-radius: 5px;
+    background-color: transparent;
+    font-size: 20px;
+    color: white;
+    font-weight: 600;
+    z-index: 10;
+    border: none;
+}
+div.swiper{
+    position: relative;
+    overflow: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+img.background{
+    width: 100vw;
+    height: 100vh;
+    filter: blur(10px);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+div:has(div.description){
+    position: relative;
+    overflow: hidden;
+}
+div:has(div.description) div.description{
+    position: absolute;
+    bottom: 0;
+    left: auto;
+    width: 450px;
+    height:fit-content;
+    background: linear-gradient(180deg,transparent,rgba(0, 0, 0, 0.75));
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 10px;
+    z-index: 10;
+}
+div:has(div.description) div.destination-map{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    opacity: 0;
+    filter: blur(15px);
+    backdrop-filter: blur(20px);
+    z-index: 5;
+}
+div:has(div.description) div.destination-map:hover{
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(.8);
+}
+div:has(div.description) div.destination-map svg path{
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+}
+div:has(div.description) div.destination-map svg:hover path{
+    stroke-dashoffset: 0;
+    transition-duration: 5s;
+}
+div:has(div.description) div.destination-map svg:hover path.active-path{
+    animation-name: isHovering;
+    animation-duration: 1.5s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+}
+@keyframes isHovering {
+    0%{
+        fill: transparent;
+    }
+    100%{
+        fill: #0d6efd;
+    }
+}
+img.image-slide{
+    width: 450px;
+    aspect-ratio: 1;
+} 
+div.navigation-button{
+    position: absolute;
+    bottom: 20px;
+    left: auto;
+    right: auto;
+    z-index: 10;
+    gap: 10px;
+}
+div.navigation-button button{
+    border: none;
+    background-color: rgb(119, 0, 255);
+    color: white;
+    padding: 10px 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+div.navigation-button button:disabled{
+    background-color: rgba(119, 0, 255, 0.4);
+}
+footer{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+svg{
+    cursor: grab;
+}
+svg path{
+    cursor: pointer;
+}
+footer div svg:nth-child(1):hover{
+    filter: drop-shadow(0px 0px 5px var(--color-facebook));
+    transform: scale(1.25);
+}
+footer div svg:nth-child(2):hover{
+    filter: drop-shadow(0px 0px 5px var(--color-twitter));
+    transform: scale(1.25);
+}
+footer div svg:nth-child(3):hover{
+    filter: drop-shadow(0px 0px 5px var(--color-reddit));
+    transform: scale(1.25);
+}
+footer div svg:nth-child(4):hover{
+    filter: drop-shadow(0px 0px 5px var(--color-instagram));
+    transform: scale(1.25);
+}
+footer div svg:nth-child(5):hover{
+    filter: drop-shadow(0px 0px 5px var(--color-tiktok));
+    transform: scale(1.25);
+}
+footer div svg:nth-child(6):hover{
+    filter: drop-shadow(0px 0px 5px var(--color-whatsapp));
+    transform: scale(1.25);
+}
+main.error img{
+    mix-blend-mode: color-burn;
+}
+.mySwiper{
+    width: 900px;
+    height: 900px;
+}
+section.images-container{
+    width: 100vw;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 50px;
+}
+div.item{
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    border-radius: 20px;
+}
+div.item img{
+    width: 300px;
+    height: 300px;
+}
+div.item img:hover{
+    transform: scale(1.1);
+    transition-timing-function: ease-in-out;
+    transition: 1.5s;
+}
+div.item svg{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.75);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+    padding: 2px;
+}
+div.item svg:hover path{
+    fill: #0d6efd;
+}
+section.dialog{
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(15px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+section.dialog{
+    clip-path: circle(100% at 50% 50%);
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(15px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+section.dialog div{
+    width: 40%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    border-radius: 20px;
+    border: none;
+}
+section.hidden{
+    clip-path: circle(0% at 50% 50%);
+}
