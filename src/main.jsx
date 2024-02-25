@@ -12,6 +12,7 @@ import "./App.css"
 import { Error } from './pages/Error';
 import {App} from './App';
 import { Home } from './pages/Home';
+import Dashboard from './pages/Dashboard';
 let router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='' element={<App/>}>
@@ -19,6 +20,7 @@ let router = createBrowserRouter(
       <Route path='destinations' element={<Destinations/>}/>
       <Route path='feedback' element={<Feedback/>}/>
       <Route path='faq' element={<Faq/>}/>
+      <Route path='dashboard' element={<Dashboard/>}/>
       <Route path='user'>
         <Route path='login' element={<Login/>}/>
         <Route path='signup' element={<Signup/>}/>

@@ -1,5 +1,5 @@
-import {NavLink, redirect} from "react-router-dom"
-import Logo from "../assets/4202194-removebg-preview.png"
+import {NavLink} from "react-router-dom"
+import Logo from "../assets/WhatsApp_Image_2024-02-24_at_20.46.19_a0be8a11-removebg-preview (1).png"
 import {gsapAnimationHandler} from "../../utils/animation"
 import { useContext } from "react"
 import { loginState } from "../App"
@@ -10,8 +10,12 @@ export const Header = () => {
     return (
         <header className="container-fluid bg-dark text-primary d-flex justify-content-evenly align-items-start">
             <div className='d-flex justify-content-between align-items-center g-1 w-auto'>
-                <img src={Logo} alt="logo" className="logo"/>
-                <h1><NavLink to="/home" className="navbar-brand">TravelAdvisor</NavLink></h1>
+                <NavLink to="/home" className="navbar-brand d-flex justify-content-between align-items-center">
+                    <img src={Logo} alt="logo" className="logo m-1"/>
+                    <h1>
+                        TravelAdvisor
+                    </h1>
+                </NavLink>
             </div>
             <nav className="navbar navbar-expand-sm navbar-dark">
                 <button
@@ -36,6 +40,9 @@ export const Header = () => {
                         </li>
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/faq">faq</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link" to="/dashboard">dashboard</NavLink>
                         </li>
                         {
                             cookies.json_token?(
