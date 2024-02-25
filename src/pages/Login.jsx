@@ -14,7 +14,7 @@ export const Login = () => {
     async function handleSubmit(e){
         e.preventDefault();
         try {
-            let response = await fetchData("http://localhost:3000/user/login",null,"POST",{
+            let response = await fetchData("http://localhost:3000/user/login","POST",{
                 email:email.trim(),
                 password:password.trim()
             },setIsLoading);

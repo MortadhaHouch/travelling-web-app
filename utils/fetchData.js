@@ -3,6 +3,9 @@ async function fetchData(url,method,body,setIsLoading){
         let request = await fetch(url,{
             method:!body?"GET":method,
             body:body?JSON.stringify(body):null,
+            headers:{
+                "Content-Type":"application/json"
+            }
         });
         setIsLoading(true);
         let response = await request.json();

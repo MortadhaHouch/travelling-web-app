@@ -15,7 +15,7 @@ export const Signup = () => {
     async function handleSubmit(e){
         e.preventDefault();
         try {
-            let response = await fetchData("http://localhost:3000/user/signup",null,"POST",{
+            let response = await fetchData("http://localhost:3000/user/signup","POST",{
                 firstName:firstName.trim(),
                 lastName:lastName.trim(),
                 email:email.trim(),
