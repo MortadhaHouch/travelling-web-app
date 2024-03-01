@@ -3,6 +3,11 @@ import {fetchData} from "../../utils/fetchData"
 import { useContext, useState } from "react";
 import {useCookies} from "react-cookie"
 import {loginState} from "../App"
+import {jwtDecode} from "jwt-decode"
+import { NavLink } from "react-router-dom";
+import {useDispatch} from "react-redux";
+import { loginReducer,checkIsAdmin } from "../../reducers/actions.js";
+import { store } from "../../reducers/store.js";
 export const Login = () => {
     let [isLoading,setIsLoading] = useState(false);
     let [email,setEmail] = useState("");
@@ -10,7 +15,14 @@ export const Login = () => {
     let [emailError,setEmailError] = useState("");
     let [passwordError,setPasswordError] = useState("");
     let [cookie,setCookie,removeCookie] = useCookies(["json_token"]);
-    let {isLoggedIn,setIsloggedIn} = useContext(loginState);
+    let dispatch = useDispatch();
+    store.subscribe(()=>{
+        console.log("local data store is connected");
+    })
+    function handlingTokenDecoding(token){
+        return jwtDecode(token)
+    }
+    let {isLoggedIn,setIsLoggedIn,isAdmin,setIsAdmin} = useContext(loginState);
     async function handleSubmit(e){
         e.preventDefault();
         try {
@@ -18,25 +30,45 @@ export const Login = () => {
                 email:email.trim(),
                 password:password.trim()
             },setIsLoading);
-            console.log(response);
-            if(response.email_error){
-                setEmailError(response.email_error);
+            console.log(jwtDecode(response.token));
+            if(handlingTokenDecoding(response.token).email_error){
+                setEmailError(handlingTokenDecoding(response.token).email_error);
+                setIsLoggedIn(false);
+                setIsAdmin(false);
+                dispatch(loginReducer("LOGOUT"));
             }else{
-                setEmailError("")
+                setEmailError("");
+                setIsLoggedIn(false);
+                setIsAdmin(false);
+                dispatch(loginReducer("LOGOUT"));
             }
-            if(response.password_error){
-                setPasswordError(response.password_error);
+            if(handlingTokenDecoding(response.token).password_error){
+                setPasswordError(handlingTokenDecoding(response.token).password_error);
+                setIsLoggedIn(false);
+                setIsAdmin(false);
+                dispatch(loginReducer("LOGOUT"));
             }else{
-                setPasswordError("")
+                setPasswordError("");
+                setIsLoggedIn(false);
+                setIsAdmin(false);
+                dispatch(loginReducer("LOGOUT"));
             }
-            if(response.token){
+            if(!handlingTokenDecoding(response.token).password_error && !handlingTokenDecoding(response.token).email_error){
                 let maxAge=60*60*24*3;
                 setCookie("json_token",response.token,{
                     maxAge,
                     path:"/"
                 });
-                setIsloggedIn(true);
+                setIsLoggedIn(true);
+                dispatch(loginReducer("LOGIN"));
                 e.target.reset();
+                if(handlingTokenDecoding(response.token).isAdmin){
+                    setIsAdmin(true);
+                    dispatch(checkIsAdmin("ADMIN"));
+                }else{
+                    setIsAdmin(false);
+                    dispatch(checkIsAdmin("USER"));
+                }
             }
         } catch (error) {
             console.log(error);
@@ -44,7 +76,7 @@ export const Login = () => {
     }
     return (
         <>
-            <main className="d-flex justify-content-center align-items-center bg-dark-subtle">
+            <main className="d-flex justify-content-center align-items-center bg-dark-subtle login-page">
                 <section className="w-75 h-75 d-flex justify-content-center align-items-center">
                     <form action="" className="w-75 h-75 d-flex flex-column justify-content-center align-items-center" onSubmit={(e)=>{
                         handleSubmit(e)
@@ -83,6 +115,18 @@ export const Login = () => {
                         <button type="submit" className={`btn btn-primary ${isLoading?"disabled":""}`}>
                             Submit
                         </button>
+                        <div className="w-100 h-auto d-flex flex-column justify-content-center align-items-center">
+                            {
+                                emailError?(
+                                    <>
+                                        <p>not logged in?? please signup</p>
+                                        <li className="nav-item list-unstyled btn btn-warning">
+                                            <NavLink className="nav-link" to="/user/signup">signup</NavLink>
+                                        </li>
+                                    </>
+                                ):""
+                            }
+                        </div>
                     </form>
                 </section>
             </main>

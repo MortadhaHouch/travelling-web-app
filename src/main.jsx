@@ -13,6 +13,12 @@ import { Error } from './pages/Error';
 import {App} from './App';
 import { Home } from './pages/Home';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import { store } from '../reducers/store';
+store.subscribe(()=>{
+  console.log("local data store is connected");
+})
+let {isAdmin,isLoggedIn} = store.getState().isAdmin
 let router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='' element={<App/>}>
@@ -20,7 +26,16 @@ let router = createBrowserRouter(
       <Route path='destinations' element={<Destinations/>}/>
       <Route path='feedback' element={<Feedback/>}/>
       <Route path='faq' element={<Faq/>}/>
-      <Route path='dashboard' element={<Dashboard/>}/>
+      {
+        (isAdmin && isLoggedIn) && (
+          <Route path='dashboard' element={<Dashboard/>}/>
+        )
+      }
+      {
+        (!isAdmin && isLoggedIn) && (
+          <Route path='profile' element={<Profile/>}/>
+        )
+      }
       <Route path='user'>
         <Route path='login' element={<Login/>}/>
         <Route path='signup' element={<Signup/>}/>

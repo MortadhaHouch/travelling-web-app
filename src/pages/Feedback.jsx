@@ -1,4 +1,8 @@
+import { store } from "../../reducers/store";
 export const Feedback = () => {
+    store.subscribe(()=>{
+        console.log("local data store is connected");
+    })
     return (
         <>
             <main className="d-flex justify-content-center align-items-center bg-dark-subtle">

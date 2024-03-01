@@ -1,21 +1,23 @@
 import { MahdiaImages,TataouineImages,TunisImages,NabeulImages } from "../../utils/images"
 import { CiBookmark } from "react-icons/ci";
 import {gsapAnimationHandler} from "../../utils/animation"
-import { useContext, useEffect, useState } from "react"
-import { loginState } from "../App"
-import { useCookies } from "react-cookie"
+import { useEffect, useState } from "react"
 import {DialogBox} from "./DialogBox"
+import { store } from "../../reducers/store";
+import { useSelector } from "react-redux";
 export const Destinations = () => {
-    let [isLoggedIn,setIsloggedIn] = useState(false);
-    let {loginStateContext} = useContext(loginState);
-    let [cookies,setCookie,removeCookie]=useCookies(["user_data"]);
+    store.subscribe(()=>{
+        console.log("local data store is connected");
+    })
     let [images,setImages] = useState([]);
+    let [isShown,setIsShown] = useState(false);
+    let isLoggedIn = useSelector((state)=>state.isLoggedIn)
     useEffect(()=>{
         setImages(TataouineImages)
         gsapAnimationHandler(".item",{opacity:0,y:15,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
     },[])
     return (
-        <main className="d-flex flex-column justify-content-center align-items-center bg-dark-subtle">
+        <main className="d-flex flex-column justify-content-center align-items-center bg-dark-subtle main-container">
             <ul className="nav nav-tabs" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                     <button
@@ -96,15 +98,22 @@ export const Destinations = () => {
                         return(
                             <div key={index} className="item">
                                 <img src={item} alt="image"/>
-                                <CiBookmark size={30} onClick={()=>{
-                                    return(
-                                        <DialogBox classList="shown" message="error"/>
-                                    )
-                                }}/>
+                                <button className="btn btn-info" onClick={(e)=>{
+                                    console.log(isShown);
+                                        if(!isLoggedIn){
+                                            setIsShown(true);
+                                        }else{
+                                            e.target.classList.toggle("active");
+                                            setIsShown(false);
+                                        }
+                                    }}>
+                                    <CiBookmark size={30}/>
+                                </button>
                             </div>
                         )
                     })
                 }
+                <DialogBox isShown={isShown} message="you're not logged in please login" setIsShown={setIsShown}/>
             </section>
         </main>
     )

@@ -23,6 +23,7 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { Chart } from 'react-chartjs-2';
 import {fetchData} from "../../utils/fetchData"
 import Loading from './Loading';
+import { store } from "../../reducers/store";
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -51,6 +52,9 @@ export default function Dashboard() {
     let [isLoggedIn,setIsLoading] = useState(false);
     let [timeBoundary,setTimeBoundary] = useState("days");
     let timeUnits = ["days","weeks","months","years"];
+    store.subscribe(()=>{
+        console.log("local data store is connected");
+    })
     async function getData(){
         try {
             let data = await fetchData("https://randomuser.me/api/?results=15","GET",null,setIsLoading)

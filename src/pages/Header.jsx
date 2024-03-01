@@ -4,16 +4,25 @@ import {gsapAnimationHandler} from "../../utils/animation"
 import { useContext } from "react"
 import { loginState } from "../App"
 import { useCookies } from "react-cookie"
+import { useDispatch, useSelector } from "react-redux"
+import { store } from "../../reducers/store"
+import { loginReducer } from "../../reducers/actions"
 export const Header = () => {
-    let {isLoggedIn,setIsloggedIn} = useContext(loginState);
+    store.subscribe(()=>{
+        console.log("local data store is connected");
+    })
+    let {isLoggedIn,setIsLoggedIn,isAdmin} = useContext(loginState);
     let [cookies,setCookie,removeCookie]=useCookies(["json_token"]);
+    let checkIsAdmin = useSelector(state=>state.isAdmin)
+    let checkIsLoggedIn =useSelector(state=>state.isLoggedIn);
+    let dispatch = useDispatch();
     return (
         <header className="container-fluid bg-dark text-primary d-flex justify-content-evenly align-items-start">
             <div className='d-flex justify-content-between align-items-center g-1 w-auto'>
                 <NavLink to="/home" className="navbar-brand d-flex justify-content-between align-items-center">
                     <img src={Logo} alt="logo" className="logo m-1"/>
                     <h1>
-                        TravelAdvisor
+                        Guide Me
                     </h1>
                 </NavLink>
             </div>
@@ -41,17 +50,35 @@ export const Header = () => {
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/faq">faq</NavLink>
                         </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to="/dashboard">dashboard</NavLink>
-                        </li>
+                        {
+                            (checkIsLoggedIn.isLoggedIn && !checkIsAdmin.isAdmin) &&(
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/profile">profile</NavLink>
+                                </li>
+                            )
+                        }
+                        {
+                            (checkIsLoggedIn.isLoggedIn && checkIsAdmin.isAdmin) &&(
+                                <li className="nav-item">
+                                    <NavLink className="nav-link" to="/dashboard">dashboard</NavLink>
+                                </li>
+                            )
+                        }
+                        {
+                            (!checkIsLoggedIn.isLoggedIn && !checkIsAdmin.isAdmin) &&(
+                                <>
+                                </>
+                            )
+                        }
                         {
                             cookies.json_token?(
                                 <button className="btn btn-danger" onClick={()=>{
-                                    setIsloggedIn(false);
+                                    setIsLoggedIn(false);
                                     removeCookie("json_token",{
                                         maxAge:0,
                                         path:"/"
                                     })
+                                    dispatch(loginReducer("LOGOUT"))
                                     location.assign("/home")
                                 }}>logout</button>
                             ):(
