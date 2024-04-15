@@ -12,6 +12,7 @@ import SwiperElement from './SwiperElement';
 import moment from 'moment';
 import { gsapAnimationHandler } from '../../utils/animation';
 import { AiFillLike } from 'react-icons/ai';
+import { FaBookmark } from "react-icons/fa";
 export default function Trips(props) {
     let [isLoading,setIsLoading] = useState(false);
     let {isDark,setIsDark} = useContext(themeContext);
@@ -105,7 +106,8 @@ export default function Trips(props) {
                                                 console.log(error);
                                             }
                                         }}
-                                    ><AiFillLike size={20} className={(isLoggedIn || localStorage.getItem("isLoggedIn") && item.isTripSaved) && `active`}/> {item.numberOfSaves}</button>
+                                    >
+                                        <FaBookmark size={20} className={(isLoggedIn || localStorage.getItem("isLoggedIn") && item.isTripSaved) && `active`}/> {item.numberOfSaves}</button>
                                     <p style={{
                                         color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#F2F1EB":"#070F2B"
                                     }}>{item.maxNumberOfParticipators}/{item.numberOfParticipators}</p>
