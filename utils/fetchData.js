@@ -1,9 +1,29 @@
 import sign from "jwt-encode"
 async function fetchData(url,method,body,setIsLoading){
+    let requestMethod;
+    let requestBody=null;
+    switch (method) {
+        case "GET":
+            requestMethod = "GET";
+            requestBody = null;
+            break;
+        case "PUT":
+            requestMethod = "PUT";
+            requestBody=JSON.stringify({body:sign(body,import.meta.env.VITE_SECRET_KEY)})
+            break;
+        case "DELETE":
+            requestMethod = "DELETE";
+            requestBody = null;
+            break;
+        case "POST":
+            requestMethod = "POST";
+            requestBody=JSON.stringify({body:sign(body,import.meta.env.VITE_SECRET_KEY)})
+            break;
+    }
     try {
-        let request = await fetch(url,{
-            method:!body?"GET":method,
-            body:body?JSON.stringify({body:sign(body,import.meta.env.VITE_SECRET_KEY)}):null,
+        let request = await fetch(import.meta.env.VITE_REQUEST_URL+url,{
+            method:requestMethod,
+            body:requestBody,
             credentials:"include",
             headers:{
                 "Content-Type":"application/json",

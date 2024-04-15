@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Swiper, SwiperSlide, } from 'swiper/react';
 import { EffectCoverflow, Pagination,Navigation,Parallax,A11y,Autoplay } from 'swiper/modules';
 import { FaArrowRightLong } from "react-icons/fa6";
@@ -48,21 +49,29 @@ export default function SwiperElement(props) {
                 props.images.map((item,index)=>{
                     return(
                         <SwiperSlide key={index}>
-                            <div className="d-flex justify-content-center align-items-center">
-                                <div className='description'>
-                                    <p className="card-title text-info text-lg-start">DESTINATION</p>
-                                    <h2 className="text-light form-control-lg">{props.stateName}</h2>
-                                </div>
-                                <div className="d-flex justify-content-center align-items-center destination-map">
-                                    <Map fill={props.fill} stateName={props.stateName} className="active-path"/>
-                                </div>
-                                <img src={item} alt="image" className="image-slide"/>
-                            </div>
+                            <>
+                                {
+                                    props.stateName ? (
+                                        <div className="d-flex justify-content-center align-items-center">
+                                            <div className='description'>
+                                                <p className="card-title text-info text-lg-start">DESTINATION</p>
+                                                <h2 className="text-light form-control-lg">{props.stateName}</h2>
+                                            </div>
+                                            <div className="d-flex justify-content-center align-items-center destination-map">
+                                                <Map fill={props.fill} stateName={props.stateName} className="active-path"/>
+                                            </div>
+                                            <img src={item} alt="image" className="image-slide"/>
+                                        </div>
+                                    ):(
+                                        <img src={item} alt="image" className="image-slide"/>
+                                    )
+                                }
+                            </>
                         </SwiperSlide>
                     )
                 })
             }
-                <img src={props.images[linkIndex]} alt="" className="background" />
+                <img src={props.images[linkIndex]} alt="" className="background"/>
             </Swiper>
         </>
     )

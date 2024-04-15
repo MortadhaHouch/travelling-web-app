@@ -1,30 +1,32 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
 import "../App.css"
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
-import { useState } from "react";
-export const Animation = () => {
+import { useRef, useState } from "react";
+const Animation = (props) => {
     let [progress,setProgress] = useState(0);
     let paths = document.querySelectorAll("path")
-    let main = document.querySelector("main.loading")
+    let mainRef = useRef();
     let timeInterval = setInterval(()=>{
         paths.forEach((path)=>{
             if(document.readyState !== "complete" && progress<100){
                 path.style.strokeDasharray = path.getTotalLength()*progress;
                 path.style.strokeDashoffset = path.getTotalLength()*progress;
                 setProgress((percent)=>percent+=0.1);
-                main.classList.add("played");
+                mainRef?.current?.classList.add("played");
             }else if(document.readyState === "complete"){
                 path.style.strokeDasharray = path.getTotalLength();
                 path.style.strokeDashoffset = 0;
-                main.classList.add("paused");
+                mainRef?.current?.classList.add("paused");
                 return ()=> clearInterval(timeInterval);
             }
         },10)
     })
     return (
-        <main className="loading played bg-dark-subtle">
+        <main className={`${props.className}`}>
             <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 199.49 185.78">
         <defs>
             <linearGradient id="Degradado_sin_nombre_38" data-name="Degradado sin nombre 38" x1="122.45" y1="30.27" x2="72.77" y2="149.41" gradientUnits="userSpaceOnUse">
@@ -76,3 +78,4 @@ export const Animation = () => {
         </main>
     )
 }
+export default Animation

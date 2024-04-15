@@ -79,6 +79,25 @@ import TunisImage23 from "../src/assets/Tunis_Images/the-carlton-loby-art.jpg"
 import TunisImage24 from "../src/assets/Tunis_Images/theater.jpg"
 import TunisImage25 from "../src/assets/Tunis_Images/tunis-bab-bahr.jpg"
 import TunisImage26 from "../src/assets/Tunis_Images/vue-de-l-exterieure.jpg"
+import SousseImage0 from "../src/assets/sousse/Luxury_penthouse_in_Sousse2.jpg"
+import SousseImage1 from "../src/assets/sousse/medina_sousse.jpg"
+import SousseImage2 from "../src/assets/sousse/medina_sousse2.jpg"
+import SousseImage3 from "../src/assets/sousse/medina_sousse3.jpg"
+import SousseImage4 from "../src/assets/sousse/medina_tunis2.jpg"
+import SousseImage5 from "../src/assets/sousse/museum_sousse.jpg"
+import SousseImage6 from "../src/assets/sousse/museum_sousse2.jpg"
+import SousseImage7 from "../src/assets/sousse/museum_sousse3.jpg"
+import SousseImage8 from "../src/assets/sousse/museum_sousse4.jpg"
+import SousseImage9 from "../src/assets/sousse/Ribat_of_sousse.jpg"
+import SousseImage10 from "../src/assets/sousse/Ribat_of_sousse2.jpg"
+import SousseImage11 from "../src/assets/sousse/Ribat_of_sousse3.jpg"
+import SousseImage12 from "../src/assets/sousse/Ribat_of_sousse4.jpg"
+import SousseImage13 from "../src/assets/sousse/sousse_beach.jpg"
+import SousseImage14 from "../src/assets/sousse/sousse_beach2.jpg"
+import SousseImage15 from "../src/assets/sousse/sousse_beach3.jpg"
+import SousseImage16 from "../src/assets/sousse/Sousse_Pearl_Marriott _Resort _Spa.jpg"
+import SousseImage17 from "../src/assets/sousse/Sousse_Pearl_Marriott _Resort _Spa2.jpg"
+import SousseImage18 from "../src/assets/sousse/Sousse_Pearl_Marriott _Resort _Spa3.jpg"
 let TataouineImages = [
     TataouineImage1,TataouineImage2,TataouineImage3,TataouineImage4,TataouineImage5,TataouineImage6,TataouineImage7,TataouineImage8,TataouineImage9,TataouineImage10,TataouineImage11
 ]
@@ -91,4 +110,6 @@ let MahdiaImages = [
 let TunisImages = [
     TunisImage1,TunisImage2,TunisImage3,TunisImage4,TunisImage5,TunisImage7,TunisImage8,TunisImage9,TunisImage10,TunisImage11,TunisImage12,TunisImage13,TunisImage14,TunisImage15,TunisImage16,TunisImage17,TunisImage18,TunisImage19,TunisImage20,TunisImage21,TunisImage22,TunisImage23,TunisImage24,TunisImage25,TunisImage26,
 ]
-export {TataouineImages,NabeulImages,MahdiaImages,TunisImages}
+let SousseImages = [SousseImage0,SousseImage1,SousseImage2,SousseImage3,SousseImage4,SousseImage5,SousseImage6,SousseImage7,SousseImage8,SousseImage9,SousseImage10,SousseImage11,SousseImage12,SousseImage13,SousseImage14,SousseImage15,SousseImage16,SousseImage17,SousseImage18,
+];
+export {TataouineImages,NabeulImages,MahdiaImages,TunisImages,SousseImages}

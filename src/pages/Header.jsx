@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 import {NavLink} from "react-router-dom"
-import Logo from "../assets/WhatsApp_Image_2024-02-24_at_20.46.19_a0be8a11-removebg-preview (1).png"
+import Logo from "./Logo"
 import {gsapAnimationHandler} from "../../utils/animation"
 import { useContext } from "react"
 import { loginState } from "../App"
@@ -7,21 +8,29 @@ import { useCookies } from "react-cookie"
 import { useDispatch, useSelector } from "react-redux"
 import { store } from "../../reducers/store"
 import { loginReducer } from "../../reducers/actions"
+import { MdDarkMode } from "react-icons/md";
+import { IoSunnyOutline } from "react-icons/io5";
+import {themeContext} from "../App"
 export const Header = () => {
     store.subscribe(()=>{
         console.log("local data store is connected");
     })
+    // eslint-disable-next-line no-unused-vars
     let {isLoggedIn,setIsLoggedIn,isAdmin} = useContext(loginState);
+    let {isDark,setIsDark} = useContext(themeContext);
     let [cookies,setCookie,removeCookie]=useCookies(["json_token"]);
-    let checkIsAdmin = useSelector(state=>state.isAdmin)
-    let checkIsLoggedIn =useSelector(state=>state.isLoggedIn);
+    let checkIsAdmin = store.getState().isAdmin
+    let checkIsLoggedIn =store.getState().isLoggedIn
     let dispatch = useDispatch();
     return (
-        <header className="container-fluid bg-dark text-primary d-flex justify-content-evenly align-items-start">
+        <header className="container-fluid text-primary d-flex justify-content-evenly align-items-start"
+            style={{
+                backgroundColor:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(33,37,41,.6)":"rgba(247, 238, 221, 0.6)"
+            }}>
             <div className='d-flex justify-content-between align-items-center g-1 w-auto'>
                 <NavLink to="/home" className="navbar-brand d-flex justify-content-between align-items-center">
-                    <img src={Logo} alt="logo" className="logo m-1"/>
-                    <h1>
+                    <Logo isDark={isDark}/>
+                    <h1 style={{color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#EEEEEE":"rgba(64, 31, 113, 0.75)"}}>
                         Guide Me
                     </h1>
                 </NavLink>
@@ -39,59 +48,111 @@ export const Header = () => {
                 <div className="collapse navbar-collapse" id="collapsibleNavId">
                     <ul className="navbar-nav me-auto mt-2 mt-lg-0">
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="/home">home</NavLink>
+                            <NavLink className="nav-link" to="/home" 
+                            style={{
+                                color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)",
+                            }}>home</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="/destinations">destinations</NavLink>
+                            <NavLink className="nav-link" to="/destinations" 
+                            style={{
+                                color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)",
+                            }}>destinations</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="/feedback">feedback</NavLink>
+                            <NavLink className="nav-link" to="/feedback" 
+                            style={{
+                                color:((isDark || JSON.parse(localStorage.getItem("isDark"))) || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)",
+                            }}>feedback</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" to="/faq">faq</NavLink>
+                            <NavLink className="nav-link" to="/faq" 
+                            style={{
+                                color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)",
+                            }}>faq</NavLink>
                         </li>
                         {
-                            (checkIsLoggedIn.isLoggedIn && !checkIsAdmin.isAdmin) &&(
+                            ((checkIsLoggedIn && checkIsAdmin.isAdmin) || (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isAdmin"))==false)) &&(
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/profile">profile</NavLink>
+                                    <NavLink className="nav-link" to="/profile" 
+                                        style={{
+                                            color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)"
+                                        }}>
+                                        profile</NavLink>
                                 </li>
                             )
                         }
                         {
-                            (checkIsLoggedIn.isLoggedIn && checkIsAdmin.isAdmin) &&(
+                            ((checkIsLoggedIn && checkIsAdmin.isAdmin) || (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isAdmin")))) &&(
                                 <li className="nav-item">
-                                    <NavLink className="nav-link" to="/dashboard">dashboard</NavLink>
+                                    <NavLink className="nav-link" to="/dashboard" 
+                                        style={{
+                                            color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgb(33,37,41)"
+                                        }}>
+                                        dashboard</NavLink>
                                 </li>
                             )
                         }
                         {
-                            (!checkIsLoggedIn.isLoggedIn && !checkIsAdmin.isAdmin) &&(
+                            ((!checkIsLoggedIn.isLoggedIn && checkIsAdmin.isAdmin==false) || (!JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isAdmin"))==false)) &&(
                                 <>
                                 </>
                             )
                         }
                         {
-                            cookies.json_token?(
-                                <button className="btn btn-danger" onClick={()=>{
+                            (checkIsLoggedIn.isLoggedIn || JSON.parse(localStorage.getItem("isLoggedIn"))) &&(
+                                <li className="nav-item m-1">
+                                    <img src={localStorage.getItem("avatar")} alt="" width={50} height={50}/>
+                                </li>
+                            )
+                        }
+                        {
+                            (checkIsLoggedIn.isLoggedIn || JSON.parse(localStorage.getItem("isLoggedIn")))?(
+                                <button className="btn btn-danger m-1" onClick={()=>{
                                     setIsLoggedIn(false);
+                                    dispatch(loginReducer("LOGOUT"))
+                                    localStorage.setItem("isLoggedIn",false);
+                                    localStorage.setItem("isAdmin",false);
+                                    localStorage.removeItem("firstName");
+                                    localStorage.removeItem("lastName");
+                                    localStorage.removeItem("email");
+                                    localStorage.removeItem("avatar");
+                                    location.assign("/home")
                                     removeCookie("json_token",{
-                                        maxAge:0,
+                                        expires:0,
                                         path:"/"
                                     })
-                                    dispatch(loginReducer("LOGOUT"))
-                                    location.assign("/home")
                                 }}>logout</button>
                             ):(
                                 <>
                                     <li className="nav-item">
-                                        <NavLink className="nav-link" to="/user/login">login</NavLink>
+                                        <NavLink className="nav-link" to="/user/login" 
+                                        style={{
+                                            color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)"
+                                        }}>login</NavLink>
                                     </li>
                                     <li className="nav-item">
-                                        <NavLink className="nav-link" to="/user/signup">signup</NavLink>
+                                        <NavLink className="nav-link" to="/user/signup" style={{
+                                            color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)"
+                                        }}>signup</NavLink>
                                     </li>
                                 </>
                             )
                         }
+                        <li className="nav-item">
+                            <button className="btn" onClick={()=>{
+                                setIsDark(!isDark);
+                                localStorage.setItem("isDark",`${!isDark}`);
+                            }}>
+                                {
+                                    isDark?(
+                                        <IoSunnyOutline size={25} color={(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgb(33,37,41)"}/>
+                                    ):(
+                                        <MdDarkMode size={25} color={(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgb(33,37,41)"}/>
+                                    )
+                                }
+                            </button>
+                        </li>
                     </ul>
                 </div>
             </nav>

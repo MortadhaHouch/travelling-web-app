@@ -2,24 +2,21 @@ import { gsap } from "gsap";
 import { Flip, ScrollTrigger } from "gsap/all";
 gsap.registerPlugin(Flip,ScrollTrigger);
 function gsapAnimationHandler(className,from,to,scrollHandling){
-    let timeLine = gsap.timeline();
     if(scrollHandling){
-        timeLine.from(className,{
+        gsap.from(className,{
             ...from,
             stagger:.5,
             ease:"back.inOut",
             scrollTrigger:{
                 trigger:className,
-                scrub:true,
             }
         },"-=.5")
-        timeLine.to(className,{
+        gsap.to(className,{
             ...to,
             stagger:.5,
             ease:"back.inOut",
             scrollTrigger:{
                 trigger:className,
-                scrub:true,
             }
         },"-=.5")
     }

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 export default function Map(props) {
     return (
         <svg baseProfile="tiny" fill="transparent" stroke="white" height="1000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" version="1.2" viewBox="0 0 1000 1000" width="1000" xmlns="http://www.w3.org/2000/svg" onClick={(e)=>{

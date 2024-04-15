@@ -5,19 +5,24 @@ import { createContext, useState } from 'react';
 import { Provider } from "react-redux";
 import {store} from "../reducers/store"
 let loginState = createContext();
+let themeContext = createContext();
 function App() {
   let [isLoggedIn,setIsLoggedIn] = useState(false);
   let [isAdmin,setIsAdmin] = useState(false);
+  let [isDark,setIsDark] = useState(false);
   return (
     <>
-      <Provider store={store}>
-        <CookiesProvider>
+      <CookiesProvider>
+        <Provider store={store}>
+          <themeContext.Provider value={{isDark,setIsDark}}>
             <loginState.Provider value={{isLoggedIn,setIsLoggedIn,isAdmin,setIsAdmin}}>
               <HomeLayout/>
             </loginState.Provider>
-        </CookiesProvider>
-      </Provider>
+          </themeContext.Provider>
+        </Provider>
+      </CookiesProvider>
     </>
   )
 }
-export {App,loginState}
+// eslint-disable-next-line react-refresh/only-export-components
+export {App,loginState,themeContext}

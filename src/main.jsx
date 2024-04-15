@@ -18,7 +18,7 @@ import { store } from '../reducers/store';
 store.subscribe(()=>{
   console.log("local data store is connected");
 })
-let {isAdmin,isLoggedIn} = store.getState().isAdmin
+let {isAdmin,isLoggedIn} = store.getState();
 let router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='' element={<App/>}>
@@ -27,12 +27,12 @@ let router = createBrowserRouter(
       <Route path='feedback' element={<Feedback/>}/>
       <Route path='faq' element={<Faq/>}/>
       {
-        (isAdmin && isLoggedIn) && (
+        ((isLoggedIn.isLoggedIn && isAdmin.isAdmin) || (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isAdmin")))) && (
           <Route path='dashboard' element={<Dashboard/>}/>
         )
       }
       {
-        (!isAdmin && isLoggedIn) && (
+        ((isLoggedIn.isLoggedIn && isAdmin.isAdmin==false) || (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isAdmin")))==false) && (
           <Route path='profile' element={<Profile/>}/>
         )
       }
