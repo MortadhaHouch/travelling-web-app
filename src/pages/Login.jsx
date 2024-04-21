@@ -10,6 +10,7 @@ import {useDispatch} from "react-redux";
 import { loginReducer,checkIsAdmin } from "../../reducers/actions.js";
 import { store } from "../../reducers/store.js";
 import sign from "jwt-encode"
+import { IoMdLogIn } from "react-icons/io";
 export const Login = () => {
     let [isLoading,setIsLoading] = useState(false);
     let [email,setEmail] = useState("");
@@ -22,9 +23,6 @@ export const Login = () => {
     store.subscribe(()=>{
         console.log("local data store is connected");
     })
-    function handlingTokenDecoding(token){
-        return jwtDecode(token)
-    }
     let {setIsLoggedIn,setIsAdmin} = useContext(loginState);
     async function handleSubmit(e){
         e.preventDefault();
@@ -34,8 +32,8 @@ export const Login = () => {
                 password:password.trim()
             },setIsLoading);
             console.log(jwtDecode(response.token));
-            if(handlingTokenDecoding(response.token).email_error){
-                setEmailError(handlingTokenDecoding(response.token).email_error);
+            if(jwtDecode(response.token).email_error){
+                setEmailError(jwtDecode(response.token).email_error);
                 setIsLoggedIn(false);
                 setIsAdmin(false);
                 dispatch(loginReducer("LOGOUT"));
@@ -45,8 +43,8 @@ export const Login = () => {
                 setIsAdmin(false);
                 dispatch(loginReducer("LOGOUT"));
             }
-            if(handlingTokenDecoding(response.token).password_error){
-                setPasswordError(handlingTokenDecoding(response.token).password_error);
+            if(jwtDecode(response.token).password_error){
+                setPasswordError(jwtDecode(response.token).password_error);
                 setIsLoggedIn(false);
                 setIsAdmin(false);
                 dispatch(loginReducer("LOGOUT"));
@@ -56,16 +54,16 @@ export const Login = () => {
                 setIsAdmin(false);
                 dispatch(loginReducer("LOGOUT"));
             }
-            if(!handlingTokenDecoding(response.token).password_error && !handlingTokenDecoding(response.token).email_error){
+            if(!jwtDecode(response.token).password_error && !jwtDecode(response.token).email_error){
                 setIsLoggedIn(true);
                 dispatch(loginReducer("LOGIN"));
                 localStorage.setItem("isLoggedIn",true);
-                localStorage.setItem("firstName",handlingTokenDecoding(response.token).firstName);
-                localStorage.setItem("lastName",handlingTokenDecoding(response.token).lastName);
-                localStorage.setItem("isAdmin",handlingTokenDecoding(response.token).isAdmin);
-                localStorage.setItem("email",handlingTokenDecoding(response.token).email);
-                localStorage.setItem("avatar",handlingTokenDecoding(response.token).avatar);
-                if(handlingTokenDecoding(response.token).isAdmin){
+                localStorage.setItem("firstName",jwtDecode(response.token).firstName);
+                localStorage.setItem("lastName",jwtDecode(response.token).lastName);
+                localStorage.setItem("isAdmin",jwtDecode(response.token).isAdmin);
+                localStorage.setItem("email",jwtDecode(response.token).email);
+                localStorage.setItem("avatar",jwtDecode(response.token).avatar);
+                if(jwtDecode(response.token).isAdmin){
                     localStorage.setItem("isAdmin",true);
                     setIsAdmin(true);
                     dispatch(checkIsAdmin("ADMIN"));
@@ -75,8 +73,8 @@ export const Login = () => {
                     dispatch(checkIsAdmin("USER"));
                 }
                 let maxAge=60*60*24*3;
-                console.log(handlingTokenDecoding(response.token));
-                let {email,isAdmin,firstName,lastName} = handlingTokenDecoding(response.token)
+                console.log(jwtDecode(response.token));
+                let {email,isAdmin,firstName,lastName} = jwtDecode(response.token)
                 setCookie('json_token',sign({email,isAdmin,firstName,lastName},import.meta.env.VITE_SECRET_KEY),{
                     maxAge,
                     path:"/"
@@ -134,7 +132,7 @@ export const Login = () => {
                             }}>{passwordError}</p>
                         </div>
                         <button type="submit" className={`btn btn-primary ${isLoading?"disabled":""}`}>
-                            Login
+                            <IoMdLogIn/> Login
                         </button>
                         <div className="w-100 h-auto d-flex flex-column justify-content-center align-items-center">
                             {

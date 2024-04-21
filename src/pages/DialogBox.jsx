@@ -4,26 +4,36 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Logo from "../assets/WhatsApp_Image_2024-02-24_at_20.46.19_a0be8a11-removebg-preview (1).png"
 import { themeContext } from "../App";
 import {fetchData} from "../../utils/fetchData"
+import paymentGateWays from "../../utils/paymentGateWays"
+import {jwtDecode} from "jwt-decode"
 function DialogBox(props) {
     let {isDark,setIsDark} = useContext(themeContext);
     let [isLoading,setIsLoading] = useState(false);
     let [date,setDate] = useState("");
     let [numberOfPeople,setNumberOfPeople] = useState(1);
-    let [cinNumber,setCinNumber] = useState("");
+    let [cardID,setCardID] = useState("");
     let [period,setPeriod] = useState("");
-    let [totalPrice,setTotalPrice] = useState()
+    let [totalPrice,setTotalPrice] = useState();
+    let [paymentGateway,setPaymentGateway] = useState("Arab Tunisian Bank (ATB)");
+    let dropdownRef = useRef();
     let ref = useRef();
-    function handleSubmit(){
-        fetchData("/trips/participate","POST",{
-            date,
-            cinNumber,
-            numberOfPeople,
-            period
-        },setIsLoading)
+    async function handleSubmit(){
+        try {
+            let response = await fetchData("/trips/participate","POST",{
+                date,
+                cinNumber,
+                numberOfPeople,
+                period,
+                paymentGateway
+            },setIsLoading)
+            console.log(jwtDecode(response));
+        } catch (error) {
+            console.log(error.message);
+        }
     }
     useEffect(()=>{
-        setCinNumber(cinNumber)
-    },[cinNumber])
+        setCardID(cardID)
+    },[cardID])
     useEffect(()=>{
         setNumberOfPeople(numberOfPeople)
     },[numberOfPeople])
@@ -36,6 +46,10 @@ function DialogBox(props) {
     useEffect(()=>{
         setPeriod(period)
     },[period])
+    useEffect(()=>{
+        setPaymentGateway(paymentGateway);
+        return ()=>setPaymentGateway("");
+    },[paymentGateway])
     return (
         // eslint-disable-next-line react/prop-types
         <section className={"dialog "+(props.isShown?"shown":"hidden")} ref={ref} style={{
@@ -45,7 +59,6 @@ function DialogBox(props) {
             <div style={{
                 backgroundColor: (isDark || JSON.parse(localStorage.getItem("isDark")))? "rgba(25,25,25,0.75)" : "#F2F1EB",
             }}>
-                <h2 className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>login</h2>
                 <img src={Logo} alt="" width={100} height={100}/>
                 {
                     props.data && (
@@ -146,20 +159,40 @@ function DialogBox(props) {
                                     />
                                 </div>
                                 <div className="w-50">
-                                    <label htmlFor="cinNumber" className={`form-label ${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>number</label>
+                                    <label htmlFor="cardID" className={`form-label ${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>card ID</label>
                                     <input
                                         type="number"
                                         className="form-control"
                                         name=""
-                                        id="cinNumber"
-                                        minLength={8}
-                                        placeholder="national card ID"
+                                        id="cardID"
+                                        minLength={14}
+                                        maxLength={14}
+                                        placeholder="cardID"
                                         aria-describedby="emailHelpId"
-                                        value={cinNumber}
-                                        onChange={(e)=>{setCinNumber(Number(e.target.value))}}
+                                        value={cardID}
+                                        onChange={(e)=>{setCardID(Number(e.target.value))}}
                                     />
                                 </div>
                             </div>
+                            <div className="mb-3 w-100">
+                                <select
+                                    className="form-select form-select-lg w-100"
+                                    name=""
+                                    id=""
+                                    onChange={(e)=>{
+                                        setPaymentGateway(e.target.value);
+                                    }}
+                                >
+                                    {
+                                        paymentGateWays.map((item,index)=>{
+                                            return(
+                                                <option key={index} value={item}>{item}</option>
+                                            )
+                                        })
+                                    }
+                                </select>
+                            </div>
+                            
                             <p className="text-bg-info">{totalPrice}</p>
                             <button className="btn btn-success" type="submit">confirm participation</button>
                         </form>

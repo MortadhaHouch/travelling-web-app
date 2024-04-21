@@ -10,6 +10,7 @@ import { fetchData } from "../../utils/fetchData";
 import { DialogBox } from "./DialogBox";
 import moment from "moment";
 import { gsapAnimationHandler } from "../../utils/animation";
+import { jwtDecode } from "jwt-decode";
 export default function Users(props) {
     let [users,setUsers] = useState([]);
     let [isLoading,setIsLoading] = useState(false);
@@ -32,9 +33,7 @@ export default function Users(props) {
     async function getData(){
         try {
             let data = await fetchData("/user/users","GET",null,setIsLoading);
-            setUsers(data.response);
-            console.log(users);
-            console.log(data);
+            setUsers(jwtDecode(data.token).response);
         } catch (error) {
             console.log(error);
         }
@@ -51,7 +50,7 @@ export default function Users(props) {
             backgroundColor:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#070F2B":"#F2F1EB"
         }}>
             {
-                users.length!==0 ? users.map((el,i)=>{
+                users && users.length!==0 ? users.map((el,i)=>{
                     const formattedDate = moment(new Date(Number(el.addedOn))).format('MMMM Do YYYY, h:mm:ss a');
                     return(
                         <Suspense key={i}>
@@ -61,7 +60,7 @@ export default function Users(props) {
                                     setIsShown(true);
                                     setItemToRemove(el);
                                 }}></button>
-                                <img src={el.userAvatar} alt="image" />
+                                <img src={el.userAvatar} alt="image" style={{border:`3px solid ${el.isLoggedIn?"green":"red"}`}}/>
                                 <p 
                                     title="click to copy"
                                 style={{

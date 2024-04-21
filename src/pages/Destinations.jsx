@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react"
 import {DialogBox} from "./DialogBox"
 import { store } from "../../reducers/store";
 import { themeContext } from "../App";
+import { IoShareSocialSharp } from "react-icons/io5";
 export const Destinations = () => {
     store.subscribe(()=>{
         console.log("local data store is connected");
@@ -155,7 +156,7 @@ export const Destinations = () => {
                                                 >
                                                     participate
                                                 </button>
-                                                <button className="btn btn-info" onClick={(e)=>{
+                                                <button className="btn btn-primary p-1" onClick={(e)=>{
                                                     console.log(isShown);
                                                         if(!checkIsLoggedIn.isLoggedIn){
                                                             setIsShown(true);
@@ -166,6 +167,24 @@ export const Destinations = () => {
                                                     }}>
                                                     <CiBookmark size={30}/>
                                                 </button>
+                                                {
+                                                    navigator.share && (
+                                                        <button  className="btn btn-secondary p-1" onClick={()=>{
+                                                            navigator.share({
+                                                                title:"destination",
+                                                                text:"description",
+                                                                files:"file object to be shared",
+                                                                url:""
+                                                            }).then((obj)=>{
+                                                                console.log(obj);
+                                                            }).catch((err)=>{
+                                                                console.log(err);
+                                                            })
+                                                        }}>
+                                                            <IoShareSocialSharp size={30}/>
+                                                        </button>
+                                                    )
+                                                }
                                             </>
                                         )
                                     }

@@ -10,7 +10,15 @@ import { store } from "../../reducers/store"
 import { loginReducer } from "../../reducers/actions"
 import { MdDarkMode } from "react-icons/md";
 import { IoSunnyOutline } from "react-icons/io5";
-import {themeContext} from "../App"
+import {themeContext} from "../App";
+import { FaHome } from "react-icons/fa";
+import { FaDirections } from "react-icons/fa";
+import { MdFeedback } from "react-icons/md";
+import { FaQuestion } from "react-icons/fa";
+import { FaUserAlt } from "react-icons/fa";
+import { MdSpaceDashboard } from "react-icons/md";
+import { IoMdLogIn } from "react-icons/io";
+import { AiOutlineLogout } from "react-icons/ai";
 export const Header = () => {
     store.subscribe(()=>{
         console.log("local data store is connected");
@@ -51,25 +59,25 @@ export const Header = () => {
                             <NavLink className="nav-link" to="/home" 
                             style={{
                                 color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)",
-                            }}>home</NavLink>
+                            }}><FaHome /> home</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/destinations" 
                             style={{
                                 color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)",
-                            }}>destinations</NavLink>
+                            }}><FaDirections /> destinations</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/feedback" 
                             style={{
                                 color:((isDark || JSON.parse(localStorage.getItem("isDark"))) || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)",
-                            }}>feedback</NavLink>
+                            }}><MdFeedback /> feedback</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink className="nav-link" to="/faq" 
                             style={{
                                 color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)",
-                            }}>faq</NavLink>
+                            }}><FaQuestion /> faq</NavLink>
                         </li>
                         {
                             ((checkIsLoggedIn && checkIsAdmin.isAdmin) || (JSON.parse(localStorage.getItem("isLoggedIn")) && JSON.parse(localStorage.getItem("isAdmin"))==false)) &&(
@@ -78,7 +86,7 @@ export const Header = () => {
                                         style={{
                                             color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)"
                                         }}>
-                                        profile</NavLink>
+                                        <FaUserAlt /> profile</NavLink>
                                 </li>
                             )
                         }
@@ -89,7 +97,7 @@ export const Header = () => {
                                         style={{
                                             color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgb(33,37,41)"
                                         }}>
-                                        dashboard</NavLink>
+                                        <MdSpaceDashboard /> dashboard</NavLink>
                                 </li>
                             )
                         }
@@ -102,7 +110,7 @@ export const Header = () => {
                         {
                             (checkIsLoggedIn.isLoggedIn || JSON.parse(localStorage.getItem("isLoggedIn"))) &&(
                                 <li className="nav-item m-1">
-                                    <img src={localStorage.getItem("avatar")} alt="" width={50} height={50}/>
+                                    <img src={localStorage.getItem("avatar")} alt="" width={50} height={50} style={{objectFit:"cover",borderRadius:"50%"}}/>
                                 </li>
                             )
                         }
@@ -122,14 +130,14 @@ export const Header = () => {
                                         expires:0,
                                         path:"/"
                                     })
-                                }}>logout</button>
+                                }}><AiOutlineLogout /> logout</button>
                             ):(
                                 <>
                                     <li className="nav-item">
                                         <NavLink className="nav-link" to="/user/login" 
                                         style={{
                                             color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgba(64, 31, 113, 0.75)"
-                                        }}>login</NavLink>
+                                        }}><IoMdLogIn /> login</NavLink>
                                     </li>
                                     <li className="nav-item">
                                         <NavLink className="nav-link" to="/user/signup" style={{

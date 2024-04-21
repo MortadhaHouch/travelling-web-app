@@ -8,7 +8,7 @@ import { store } from "../../reducers/store";
 import { useDispatch } from "react-redux";
 import { loginReducer } from "../../reducers/actions";
 import { IoMan} from "react-icons/io5";
-import { IoIosWoman } from "react-icons/io";
+import { IoIosWoman, IoMdLogIn } from "react-icons/io";
 import { LuUpload } from "react-icons/lu";
 import fileReading from "../../utils/fileReading";
 import sign from "jwt-encode"
@@ -16,9 +16,6 @@ export const Signup = () => {
     store.subscribe(()=>{
         console.log("local data store connected");
     })
-    function handlingTokenDecoding(token){
-        return jwtDecode(token)
-    }
     let [firstName,setFirstName] = useState("");
     let [lastName,setLastName] = useState("");
     let [email,setEmail] = useState("");
@@ -35,10 +32,10 @@ export const Signup = () => {
     let {isLoggedIn,setIsLoggedIn} = useContext(loginState);
     let dispatch = useDispatch();
     useEffect(()=>{
-        console.log(isMale);
+        setIsMale(isMale);
     },[isMale])
     useEffect(()=>{
-        console.log(avatar);
+        setAvatar(avatar)
     },[avatar])
     async function handleSubmit(e){
         e.preventDefault();
@@ -50,30 +47,30 @@ export const Signup = () => {
                 password:password.trim(),
                 age,
                 isMale,
-                avatar:avatar?avatar:null
+                avatar
             },setIsLoading);
             console.log(response);
-            if(handlingTokenDecoding(response.token).email_existence_error){
-                setEmailError(handlingTokenDecoding(response.token).email_existence_error);
+            if(jwtDecode(response.token).email_existence_error){
+                setEmailError(jwtDecode(response.token).email_existence_error);
             }else{
                 setEmailError("")
             }
-            if(handlingTokenDecoding(response.token).firstName_existence_error){
-                setNameError(handlingTokenDecoding(response.token).firstName_existence_error)
+            if(jwtDecode(response.token).firstName_existence_error){
+                setNameError(jwtDecode(response.token).firstName_existence_error)
             }else{
                 setNameError("")
             }
-            if(!handlingTokenDecoding(response.token).email_existence_error && !handlingTokenDecoding(response.token).firstName_existence_error){
+            if(!jwtDecode(response.token).email_existence_error && !jwtDecode(response.token).firstName_existence_error){
                 localStorage.setItem("isLoggedIn",true);
-                localStorage.setItem("firstName",handlingTokenDecoding(response.token).firstName);
-                localStorage.setItem("lastName",handlingTokenDecoding(response.token).lastName);
-                localStorage.setItem("isAdmin",handlingTokenDecoding(response.token).isAdmin);
-                localStorage.setItem("email",handlingTokenDecoding(response.token).email);
-                localStorage.setItem("avatar",handlingTokenDecoding(response.token).avatar);
+                localStorage.setItem("firstName",jwtDecode(response.token).firstName);
+                localStorage.setItem("lastName",jwtDecode(response.token).lastName);
+                localStorage.setItem("isAdmin",jwtDecode(response.token).isAdmin);
+                localStorage.setItem("email",jwtDecode(response.token).email);
+                localStorage.setItem("avatar",jwtDecode(response.token).avatar);
                 let maxAge=60*60*24*3;
                 dispatch(loginReducer("LOGIN"));
                 setIsLoggedIn(true);
-                let {email,isAdmin,firstName,lastName} = handlingTokenDecoding(response.token)
+                let {email,isAdmin,firstName,lastName} = jwtDecode(response.token)
                 setCookie('json_token',sign({email,isAdmin,firstName,lastName},import.meta.env.VITE_SECRET_KEY),{
                     maxAge,
                     path:"/"
@@ -184,7 +181,7 @@ export const Signup = () => {
                             </div>
                             <div className="image-slide images-container">
                                 {
-                                    avatar && (<img src={avatar} alt="avatar" />)
+                                    avatar && (<img src={avatar} alt="avatar" width={200} height={150} style={{borderRadius:15}}/>)
                                 }
                             </div>
                         </div>
@@ -221,8 +218,8 @@ export const Signup = () => {
                                 }}
                             />
                         </div>
-                        <button type="submit" className={`btn btn-primary ${isLoading?"disabled":""}`} disabled={isLoading}>
-                            Signup
+                        <button type="submit" className={`btn btn-primary ${isLoading?"disabled":""}`} disabled={(firstName=="" && lastName=="" && email=="" && password=="" && isLoading=="" && age=="" && isMale=="" && avatar=="") || isLoading==true}>
+                        <IoMdLogIn/> Signup
                         </button>
                     </form>
                 </section>

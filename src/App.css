@@ -97,6 +97,75 @@ header div a svg path.cls-1.active{
     stroke-dashoffset: 0;
     transition:stroke-dashoffset 5s;
 }
+ul.aside{
+    position: fixed;
+    top: 0px;
+    left: -250px;
+    padding-top: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 250px;
+    height: 100vh;
+    z-index: 5;
+    background-color: rgba(108, 108, 108, 0.5);
+    backdrop-filter: blur(10px);
+}
+ul.aside.shown{
+    left: 0;
+}
+ul.aside:not(.shown){
+    left: -250px;
+}
+ul.aside button.tooltip-arrow{
+    position: absolute;
+    top: 100px;
+    right: -50px;
+}
+ul.aside li{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    position: relative;
+}
+ul.aside li:hover{
+    padding-left: 20px;
+}
+ul.aside li button{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+ul.aside li button.active{
+    border-radius: 20px 0 0 20px;
+}
+ul.aside li:has(button.active)::before {
+    position: absolute;
+    top: -30px;
+    right: 0px;
+    content: "";
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    box-shadow: 15px 15px 0px 0px white;
+    clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+}
+ul.aside li:has(button.active)::after{
+    position: absolute;
+    bottom: -30px;
+    right: 0px;
+    content: "";
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    box-shadow: 15px -15px 0px 0px white;
+    clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+}
 main{
     padding-block: 100px;
     width: var(--main-width);
@@ -111,7 +180,7 @@ main{
     align-items: flex-start;
 }
 main form{
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     border-top: 2px solid white;
     border-right: 2px solid white;
     border-radius: 15px;
@@ -119,6 +188,7 @@ main form{
 }
 main form div textarea{
     resize: none;
+    opacity: .95;
 }
 main.loading{
     width: 100vw;
@@ -278,12 +348,6 @@ main ul{
 main ul li button.nav-link{
     transform: translateY(0);
     width: 100%;
-}
-main ul li button.nav-link.active{
-    transform: translateY(-10px);
-    border-radius: 15px;
-    transition: .25s;
-    transition-timing-function: ease-in-out;
 }
 div.swiper{
     position: relative;
@@ -539,6 +603,15 @@ section.feedback-cards-container div.feedback-card div h5{
     grid-row-end: 3;
     font-size: 15px;
 }
+section.feedback-cards-container div.feedback-card div:nth-child(2){
+    width: 100%;
+    opacity: .5;
+}
+section.feedback-cards-container div.feedback-card div:nth-child(2) span{
+    width: 100%;
+    text-align: start;
+    font-size: 12.5px;
+}
 section.feedback-cards-container div.feedback-card p{
     width: 100%;
     text-align: start;
@@ -605,6 +678,7 @@ div.item div.item-details{
     height: fit-content;
     padding: 10px 15px;
     backdrop-filter: blur(0px);
+    background: linear-gradient(0deg, #000000c4, transparent);
 }
 div.item:hover div.item-details{
     transition:bottom .5s;
@@ -709,8 +783,9 @@ section.dialog div button.remove-button{
 }
 section.dialog div button.close-button{
     position: absolute;
-    top: 15px;
+    top: 30px;
     right: 15px;
+    background-color: rgb(255, 0, 0);
 }
 section.hidden{
     clip-path: circle(0% at 50% 50%);
@@ -777,4 +852,31 @@ div.notification:not(.hidden){
 }
 div.notification.hidden{
     right:-200px;
+}
+div.dropdown-menu{
+    cursor: pointer;
+    transform: scaleY(0);
+}
+div.dropdown-menu.shown{
+    transform: scaleY(1);
+}
+div.dropdown-menu:not(.shown){
+    transform: scaleY(0);
+}
+div.dropdown-menu span{
+    cursor: pointer;
+}
+div.dropdown-menu span:hover{
+    background-color: #401F71;
+    color: azure;
+    padding-left: 20px;
+}
+div.text-box{
+    transform: scaleY(0) !important;
+    transform-origin:top;
+}
+div.text-box.shown{
+    transform: scaleY(1) !important;
+    transform-origin:top;
+
 }

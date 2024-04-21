@@ -1,11 +1,21 @@
 /* eslint-disable no-unused-vars */
-import { Suspense, useContext, useEffect, useRef, useState } from "react";
+import { Suspense, useContext, useDeferredValue, useEffect, useRef, useState, useTransition } from "react";
 import { store } from "../../reducers/store";
 import { themeContext } from "../App";
 import { fetchData } from "../../utils/fetchData";
 import {jwtDecode} from "jwt-decode"
-import { AiFillLike } from "react-icons/ai";
+import { AiFillLike, AiOutlineComment, AiOutlineSend } from "react-icons/ai";
 import { MdOutlineAlternateEmail } from "react-icons/md";
+import { IoIosAddCircle } from "react-icons/io";
+import { VscFeedback } from "react-icons/vsc";
+import { AiFillDislike } from "react-icons/ai";
+import { MdPostAdd } from "react-icons/md";
+import { AiFillEyeInvisible } from "react-icons/ai";
+import { FaEye } from "react-icons/fa";
+import moment from "moment";
+import { BsCalendar2Date } from "react-icons/bs";
+import { FaEdit } from "react-icons/fa";
+import FeedbackIllustration from "./FeedbackIllustration"
 export const Feedback = () => {
     store.subscribe(()=>{
         console.log("local data store is connected");
@@ -18,13 +28,25 @@ export const Feedback = () => {
     let [responseMessage,setResponseMessage]= useState("");
     let notificationRef = useRef();
     let [feedbacks,setFeedbacks] = useState([]);
-    let [isShown,setIsShown] = useState(false);
+    let [feedbackObject,setFeedbackObject] = useState(null);
+    let [isVisibleByOther,setIsVisibleByOther] = useState(false);
+    let [feedbacksCount,setFeedbacksCount] = useState(0);
+    let [numberOfPages,setNumberOfPages] = useState(0);
+    let [isPending,startTransition] = useTransition();
+    let textBoxRef = useRef([]);
+    let numberOfCommentRef = useRef();
+    let buttonsRef = useRef([]);
+    let numberOfLikesRef = useRef();
+    let numberOfDislikesRef = useRef();
+    let deferredValue = useDeferredValue(feedbacks);
+    let [comment,setComment] = useState("");
     async function handleSubmit(e){
         e.preventDefault();
         try {
             let request = await fetchData("/feedbacks/add","POST",{
                 feedback:feedback.trim(),
-                email:localStorage.getItem("email").trim()
+                email:localStorage.getItem("email").trim(),
+                isVisibleByOther
             },setIsLoading)
             if(jwtDecode(request.message).message){
                 setResponseMessage(jwtDecode(request.message).message);
@@ -48,21 +70,39 @@ export const Feedback = () => {
     async function getData(){
         try {
             let request = await fetchData("/feedbacks","GET",null,setIsLoading);
-            setFeedbacks(jwtDecode(request.response).feedbacks)
-            console.log(jwtDecode(request.response).feedbacks)
+            setFeedbacks(jwtDecode(request.response).feedbacks);
+            setFeedbacksCount(jwtDecode(request.response).feedbacksCount);
+            setNumberOfPages(jwtDecode(request.response).numberOfPages);
         } catch (error) {
             console.log(error);
         }
     }
     useEffect(()=>{
-        setComponentName(componentName)
-    },[componentName])
+        setComponentName(componentName);
+    },[componentName]);
     useEffect(()=>{
-        getData()
-    },[])
+        setFeedbacks(deferredValue);
+        return ()=>setFeedbacks([]);
+    },[deferredValue])
+    useEffect(()=>{
+        setFeedbackObject(feedbackObject);
+    },[feedbackObject])
+    useEffect(()=>{
+        setIsVisibleByOther(isVisibleByOther);
+    },[isVisibleByOther])
+    useEffect(()=>{
+        setFeedbacksCount(feedbacksCount);
+    },[feedbacksCount])
+    useEffect(()=>{
+        setNumberOfPages(numberOfPages);
+        for (let index = 0; index < numberOfPages; index++) {
+            buttonsRef.current.push(index);
+        }
+        return ()=> buttonsRef.current = [];
+    },[numberOfPages])
     return (
         <>
-            <main className="d-flex flex-column justify-content-start align-items-center" style={{
+            <main className="d-flex flex-column justify-content-start align-items-center w-100" style={{
                 backgroundColor:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#070F2B":"#F2F1EB"
             }}>
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
@@ -78,7 +118,7 @@ export const Feedback = () => {
                             aria-selected="true"
                             onClick={()=>setComponentName("feedback")}
                         >
-                            feedback
+                            <IoIosAddCircle /> feedback
                         </button>
                     </li>
                     <li className="nav-item" role="presentation">
@@ -91,22 +131,64 @@ export const Feedback = () => {
                             role="tab"
                             aria-controls="feedbacks"
                             aria-selected="false"
-                            onClick={()=>setComponentName("feedbacks")}
+                            onClick={()=>{
+                                setComponentName("feedbacks");
+                                startTransition(getData);
+                            }}
                         >
-                            feedbacks
+                            <VscFeedback /> feedbacks
                         </button>
                     </li>
                 </ul>
-                <div className="tab-content w-100 h-100">
+                <div className="tab-content w-100 h-auto">
                     <section
-                        className="tab-pane w-100 h-100 d-flex justify-content-center align-items-center flex-wrap active"
+                        className="tab-pane w-100 h-100 d-flex justify-content-center align-items-center flex-wrap active position-relative"
                         id="feedback-tab"
                         role="tabpanel"
                         aria-labelledby="feedback-tab"
                     >
+                        <FeedbackIllustration/>
                         {
                             componentName == "feedback" && (
-                                <form action="" method="post" className="d-flex flex-column justify-content-center align-items-center w-50 h-100" onSubmit={handleSubmit}>
+                                <form action="" method="post" className="d-flex flex-column justify-content-center align-items-center w-50 h-auto" onSubmit={handleSubmit}>
+                                    <div className="dropdown open">
+                                        <span
+                                            className={`btn btn-secondary dropdown-toggle ${JSON.parse(localStorage.getItem("isLoggedIn"))?"":"disabled"}`}
+                                            type="button"
+                                            id="triggerId"
+                                            data-bs-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="false"
+                                        >
+                                            {
+                                                isVisibleByOther?(
+                                                    <>
+                                                        <FaEye /> everyone can see
+                                                    </>
+                                                ):(
+                                                    <>
+                                                        <AiFillEyeInvisible /> no one can see
+                                                    </>
+                                                )
+                                            }
+                                        </span>
+                                        <div className="dropdown-menu" aria-labelledby="triggerId">
+                                            <span className="dropdown-item" href="#"
+                                                onClick={()=>{
+                                                    setIsVisibleByOther(true);
+                                                }}
+                                            >
+                                                <FaEye /> everyone
+                                            </span>
+                                            <span className="dropdown-item" href="#"
+                                                onClick={()=>{
+                                                    setIsVisibleByOther(false)
+                                                }}
+                                            >
+                                                <AiFillEyeInvisible /> no one
+                                            </span>
+                                        </div>
+                                    </div>
                                     <div className="mb-3 w-100 h-75 d-flex flex-column justify-content-start align-items-center">
                                         <label htmlFor="feedback" className={`form-label ${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>feedback</label>
                                         <textarea 
@@ -115,8 +197,9 @@ export const Feedback = () => {
                                             cols="30" 
                                             rows="10" 
                                             required
-                                            className="form-control w-75 h-100" 
-                                            value={feedback} 
+                                            disabled={!JSON.parse(localStorage.getItem("isLoggedIn"))}
+                                            className={`form-control w-75 h-100 ${(isDark || JSON.parse(localStorage.getItem("isDark")))?"bg-dark text-light":"bg-light text-dark"}`}
+                                            value={feedback}
                                             onChange={(e)=>{
                                                 setNumberOfWords(getNumberOfWords(feedback));
                                                 setFeedback(e.target.value);
@@ -125,47 +208,125 @@ export const Feedback = () => {
                                                 setNumberOfWords(getNumberOfWords(feedback));
                                             }}
                                         ></textarea>
-                                        <p>{numberOfWords} words</p>
+                                        <p className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>{numberOfWords} words</p>
                                     </div>
                                     <button
                                         type="submit"
                                         className="btn btn-primary"
+                                        disabled={JSON.parse(localStorage.getItem("isLoggedIn"))==false || feedback.length == 0}
                                     >
-                                        post feedback
+                                        <MdPostAdd size={20}/> post feedback
                                     </button>
                                 </form>
                             )
                         }
                     </section>
                     <section
-                        className="tab-pane w-100 h-100 feedback-cards-container d-flex justify-content-center align-items-center flex-wrap"
+                        className="tab-pane w-100 h-100 feedback-cards-container d-flex flex-column justify-content-center align-items-center"
                         id="feedbacks"
                         role="tabpanel"
                         aria-labelledby="feedbacks-tab"
                     >
-                        {
-                            componentName == "feedbacks" && (
-                                feedbacks.length !== 0 ? feedbacks.map((item,index)=>{
-                                    return(
-                                        <Suspense key={index}>
-                                            <div className="feedback-card" style={{
+                        <div className="d-flex flex-row justify-content-center align-items-center flex-wrap">
+                            {
+                                componentName == "feedbacks" && (
+                                    feedbacks.length !== 0 ? feedbacks.map((item,index)=>{
+                                        const formattedDate = moment(new Date(Number(item.addedOn))).format('MMMM Do YYYY, h:mm:ss a');
+                                        return(
+                                            <Suspense key={index} fallback={"loading..."}>
+                                                <div className="feedback-card m-2" style={{
                                                     boxShadow:(isDark || JSON.parse(localStorage.getItem("isDark")))?"2px 2px 4px 1px rgba(0,0,100,0.2),-2px -2px 4px 1px rgba(0,0,0,.2)":"2px 2px 4px 1px rgba(0,0,0,.2),-2px -2px 4px 1px rgba(255,255,255,0.2)",
                                                 }}>
-                                                <div>
-                                                    <img src={item.userAvatar} alt="" />
-                                                    <h4 className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>{item.userFirstName} {item.userLastName}</h4>
-                                                    <h5 className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"} opacity-50`}><MdOutlineAlternateEmail /> {item.userEmail}</h5>
+                                                    <div>
+                                                        <img src={item.userAvatar} alt="" />
+                                                        <h4 className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>{item.userFirstName} {item.userLastName}</h4>
+                                                        <h5 className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"} opacity-50`}><MdOutlineAlternateEmail /> {item.userEmail}</h5>
+                                                    </div>
+                                                    <>
+                                                        {
+                                                            item.isVisibleByOthers?(
+                                                                <div className="w-100 d-flex flex-row justify-content-center align-items-center">
+                                                                    <FaEye className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}/>
+                                                                    <span className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}><BsCalendar2Date /> {formattedDate}</span>
+                                                                </div>
+                                                            ):(
+                                                                <div className="w-100 d-flex flex-row justify-content-center align-items-center">
+                                                                    <AiFillEyeInvisible className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}/>
+                                                                    <span className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}><BsCalendar2Date /> {formattedDate}</span>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </>
+                                                    <p className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>{item.content}</p>
+                                                    <div className="w-100 d-flex justify-content-center align-items-center">
+                                                        <button className="btn btn-outline-primary" disabled={!JSON.parse(localStorage.getItem("isLoggedIn"))}
+                                                            onClick={async()=>{
+                                                                try {
+                                                                    let request = await fetchData("/feedbacks/react","PUT",{id:item.id,email:localStorage.getItem("email"),reaction:"like"},setIsLoading);
+                                                                    numberOfDislikesRef.current.textContent=jwtDecode(request.token).feedback.numberOfDislikes;
+                                                                    numberOfLikesRef.current.textContent=jwtDecode(request.token).feedback.numberOfLikes;
+                                                                } catch (error) {
+                                                                    console.log(error);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <AiFillLike size={20}/> <span ref={numberOfLikesRef}>{item.numberOfLikes}</span>
+                                                        </button>
+                                                        <button className="btn btn-outline-primary" disabled={!JSON.parse(localStorage.getItem("isLoggedIn"))}
+                                                            onClick={async()=>{
+                                                                try {
+                                                                    let request = await fetchData("/feedbacks/react","PUT",{id:item.id,email:localStorage.getItem("email"),reaction:"dislike"},setIsLoading);
+                                                                    numberOfDislikesRef.current.textContent=jwtDecode(request.token).feedback.numberOfDislikes;
+                                                                    numberOfLikesRef.current.textContent=jwtDecode(request.token).feedback.numberOfLikes;
+                                                                } catch (error) {
+                                                                    console.log(error);
+                                                                }
+                                                            }}>
+                                                            <AiFillDislike size={20}/> <span ref={numberOfDislikesRef}>{item.numberOfDislikes}</span>
+                                                        </button>
+                                                        <button className="btn btn-outline-primary"
+                                                                onClick={()=>{
+                                                                    textBoxRef.current[index]?.classList.toggle("shown");
+                                                                }}
+                                                            >
+                                                            <AiOutlineComment/> <span ref={numberOfCommentRef}>{item.numberOfComments}</span>
+                                                        </button>
+                                                        <button className={`btn btn-outline-primary ${!(JSON.parse(localStorage.getItem("isLoggedIn")) || item.feedbackIsMine)?"disabled":""}`} disabled={!(JSON.parse(localStorage.getItem("isLoggedIn")) && item.feedbackIsMine)}>
+                                                            <FaEdit />
+                                                        </button>
+                                                    </div>
+                                                    <div ref={(el)=>textBoxRef.current.push(el)} className="w-100 d-flex justify-content-center align-items-center text-box">
+                                                        <textarea name="" id="" className="form-control w-100" style={{resize:"none"}}></textarea>
+                                                        <button className="btn btn-info" disabled={!(JSON.parse(localStorage.getItem("isLoggedIn")) || comment.length == 0)}>
+                                                            <AiOutlineSend/>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <p className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>{item.content}</p>
-                                                <p className={`${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}><AiFillLike size={20}/> {item.numberOfLikes}</p>
-                                            </div>
-                                        </Suspense>
+                                            </Suspense>
+                                        )
+                                    }):(
+                                        <p className={`form-label ${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>No feedbacks are posted yet</p>
                                     )
-                                }):(
-                                    <p className={`form-label ${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>No feedbacks are posted yet</p>
                                 )
+                            }
+                        </div>
+                        {
+                            componentName == "feedbacks" && feedbacksCount !== 0 && (
+                                <div className="d-flex flex-row justify-content-center align-items-center">
+                                    <ul className="nav nav-pills">
+                                        {
+                                            buttonsRef.current.map((_,index)=>{
+                                                return(
+                                                    <li className="nav-item" key={index}>
+                                                        <button className="btn btn-info">{index+1}</button>
+                                                    </li>
+                                                )
+                                            })
+                                        }
+                                    </ul>
+                                </div>
                             )
-                        } 
+                        }
                     </section>
                 </div>
                 {
