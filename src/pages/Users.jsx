@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import { Suspense, useContext, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState,useTransition } from "react";
 import { BsCalendar2Date } from "react-icons/bs";
 import { FaRegUser } from "react-icons/fa6";
 import { LiaBirthdayCakeSolid } from "react-icons/lia";
@@ -11,6 +11,7 @@ import { DialogBox } from "./DialogBox";
 import moment from "moment";
 import { gsapAnimationHandler } from "../../utils/animation";
 import { jwtDecode } from "jwt-decode";
+import Loading from "./Loading";
 export default function Users(props) {
     let [users,setUsers] = useState([]);
     let [isLoading,setIsLoading] = useState(false);
@@ -18,13 +19,11 @@ export default function Users(props) {
     let [isShown,setIsShown] = useState(false);
     let [itemToRemove,setItemToRemove]= useState(null);
     let [entity,setEntity] = useState("");
+    let [isPending,startTransaction] = useTransition()
     useEffect(()=>{
         setUsers(users);
         return ()=> setUsers([]);
     },[users])
-    useEffect(()=>{
-        getData();
-    },[])
     useEffect(()=>{
         if(isShown == false){
             getData();
@@ -39,17 +38,22 @@ export default function Users(props) {
         }
     }
     useEffect(()=>{
+        startTransaction(getData);
         gsapAnimationHandler("p.p-indicator",{x:-20,filter:"blur(10px)",opacity:0},{x:0,filter:"blur(0px)",opacity:1},true)
+        gsapAnimationHandler("div.user-card-item",{x:-20,filter:"blur(10px)",opacity:0},{x:0,filter:"blur(0px)",opacity:1},true)
     },[])
     return (
         <section
-            className={`${props.className} cards-container`}
+            className={`cards-container ${props.className}`}
             role={props.role}
             aria-labelledby={props.ariaLabelledby}
             style={{
             backgroundColor:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#070F2B":"#F2F1EB"
         }}>
             {
+                isPending ?(
+                    <Loading/>
+                ):(
                 users && users.length!==0 ? users.map((el,i)=>{
                     const formattedDate = moment(new Date(Number(el.addedOn))).format('MMMM Do YYYY, h:mm:ss a');
                     return(
@@ -87,7 +91,7 @@ export default function Users(props) {
                     <p className="p-indicator" style={{
                         color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#F2F1EB":"#070F2B"
                     }}>no users are registered yet</p>
-                )
+                ))
             }
             {
                 (isShown && itemToRemove) && <DialogBox isShown={isShown} message="remove-item" callback={fetchData} setIsLoading={setIsLoading} setIsShown={setIsShown} entity={entity} itemToRemove={itemToRemove}/>

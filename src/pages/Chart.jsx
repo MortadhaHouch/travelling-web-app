@@ -46,6 +46,7 @@ ChartJS.register(
 );
 import {Chart as ChartComponent} from "react-chartjs-2"
 import { gsapAnimationHandler } from "../../utils/animation";
+import { jwtDecode } from "jwt-decode";
 export default function Chart(props) {
     let chartTypes = ["bar","pie","polarArea","line","doughnut","scatter","radar","bubble"];
     let [timeBoundary,setTimeBoundary] = useState("days");
@@ -69,9 +70,7 @@ export default function Chart(props) {
     async function getData(){
         try {
             let data = await fetchData("/user/users","GET",null,setIsLoading);
-            setUsers(data.response);
-            console.log(users);
-            console.log(data);
+            setUsers(jwtDecode(data.token).response);
         } catch (error) {
             console.log(error);
         }
@@ -103,78 +102,97 @@ export default function Chart(props) {
                                 }
                                 </select>
                             </div>
-                            <ChartComponent type={chartType} datasetIdKey='id' ref={chartRef} options={{
-                                transitions:true,
-                                responsive:true,
-                                plugins:{
-                                    tooltip:{
-                                        enabled:true,
-                                        backgroundColor:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#F2F1EB":"#070F2B",
-                                        borderColor:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#F2F1EB":"#070F2B",
-                                        borderWidth:3
+                            <ChartComponent
+                            type={chartType}
+                            datasetIdKey='id'
+                            ref={chartRef}
+                            options={{
+                                transitions: true,
+                                responsive: true,
+                                plugins: {
+                                tooltip: {
+                                    enabled: true,
+                                    backgroundColor: isDark || JSON.parse(localStorage.getItem("isDark")) ? "#F2FB" : "#070F2B",
+                                    borderColor: isDark || JSON.parse(localStorage.getItem("isDark")) ? "#F2FA" : "#070F2B",
+                                    borderWidth: 3
+                                },
+                                legend: {
+                                    display: true,
+                                },
+                                title: {
+                                    color: "red",
+                                    display: true,
+                                    padding: {
+                                    top: 10,
+                                    bottom: 10
                                     },
-                                    legend:{
-                                        display:true,
-                                    },
-                                    title:{
-                                        color:"red",
-                                        display:true,
-                                        padding:{
-                                            top:10,
-                                            bottom:10
-                                        },
-                                    },
-                                    filler:{
-                                        propagate:false
+                                },
+                                filler: {
+                                    propagate: false
+                                }
+                                },
+                                scales: {
+                                x: {
+                                    min: 0,
+                                    stacked: true,
+                                    ticks: {
+                                        callback: (val) => { return Math.floor(val + 1) + " user" }
                                     }
                                 },
-                                scales:{
-                                    x:{
-                                        min:0,
-                                        ticks:{
-                                            callback:(val)=>{return Math.floor(val)+" users"}
-                                        }
-                                    },
-                                    y:{
-                                        min:0,
-                                        ticks:{
-                                            callback:(val)=>{
-                                                return `${dateConversion(val,previousTimeBoundary,timeBoundary)} ${timeBoundary}`
-                                            }
-                                        }
+                                y: {
+                                    min: 0,
+                                    stacked: true,
+                                    ticks: {
+                                        callback: (val) => { return Math.floor(val + 1) + " " + timeBoundary }
                                     }
+                                }
                                 },
-                                animation:true,
-                                animations:true,
-                                resizeDelay:0,
-                                tension:.5,
-                            }} data={{
-                                labels:users.map((item)=>{return item.addedOn}),
-                                datasets:[{
-                                    label:"users",
-                                    circular:true,
-                                    animation:true,
-                                    animations:true,
-                                    hoverBorderWidth:3,
-                                    hoverBorderColor:"darkblue",
-                                    fill:.5,
-                                    hitRadius:5,
-                                    hoverRadius:5,
-                                    data:users.map((item)=>{
-                                        return item.addedOn
+                                animation: true,
+                                animations: true,
+                                resizeDelay: 0,
+                                tension: 0.5,
+                            }}
+                            data={{
+                                labels: users.map((_, index) => {
+                                // Order users based on the date they're added
+                                const date = new Date(users[index].addedOn);
+                                return date.toLocaleDateString(); // Convert date to a string representation
+                                }),
+                                datasets: [{
+                                    label: "users",
+                                    animation: true,
+                                    animations: true,
+                                    hoverBorderWidth: 3,
+                                    hoverBorderColor: "#F2FB",
+                                    fill: 0.5,
+                                    hitRadius: 5,
+                                    hoverRadius: 5,
+                                    data: users.map((item) => {
+                                        switch (timeBoundary) {
+                                        case "days":
+                                            return new Date(Number(item.addedOn)).getDay();
+                                        case "weeks":
+                                            return new Date(Number(item.addedOn)).getDate();
+                                        case "months":
+                                            return new Date(Number(item.addedOn)).getMonth();
+                                        case "years":
+                                            return new Date(Number(item.addedOn)).getFullYear();
+                                        default:
+                                            break;
+                                        }
                                     }),
-                                    backgroundColor:users.map(()=>{
-                                        return `rgb(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)})`
+                                    backgroundColor: users.map(() => {
+                                        return `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`
                                     }),
-                                    hoverBackgroundColor:users.map(()=>{
-                                        return `rgb(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)})`
+                                    hoverBackgroundColor: users.map(() => {
+                                        return `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`
                                     }),
                                 }]
-                            }} 
-                        />
+                            }}
+                            />
                             <div className="mb-3">
                                 <label htmlFor="" className="form-label" style={{
-                                    color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#070F2B":"#F2F1EB"
+                                    color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#070F2B":"#F2FB"
                                 }}>time boundary</label>
                                 <select
                                     className="form-select form-select-lg"
@@ -200,7 +218,7 @@ export default function Chart(props) {
                         </>
                     ):(
                         <p className="p-indicator" style={{
-                            color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#F2F1EB":"#070F2B",
+                            color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#F2FB":"#070F2B",
                             width:"100%",
                             textAlign:"center"
                         }}>No graph to be shown while no visitors are registered yet</p>

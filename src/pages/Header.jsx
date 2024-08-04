@@ -19,6 +19,7 @@ import { FaUserAlt } from "react-icons/fa";
 import { MdSpaceDashboard } from "react-icons/md";
 import { IoMdLogIn } from "react-icons/io";
 import { AiOutlineLogout } from "react-icons/ai";
+import { fetchData } from "../../utils/fetchData"
 export const Header = () => {
     store.subscribe(()=>{
         console.log("local data store is connected");
@@ -116,20 +117,25 @@ export const Header = () => {
                         }
                         {
                             (checkIsLoggedIn.isLoggedIn || JSON.parse(localStorage.getItem("isLoggedIn")))?(
-                                <button className="btn btn-danger m-1" onClick={()=>{
-                                    setIsLoggedIn(false);
-                                    dispatch(loginReducer("LOGOUT"))
-                                    localStorage.setItem("isLoggedIn",false);
-                                    localStorage.setItem("isAdmin",false);
-                                    localStorage.removeItem("firstName");
-                                    localStorage.removeItem("lastName");
-                                    localStorage.removeItem("email");
-                                    localStorage.removeItem("avatar");
-                                    location.assign("/home")
-                                    removeCookie("json_token",{
-                                        expires:0,
-                                        path:"/"
-                                    })
+                                <button className="btn btn-danger m-1" onClick={async()=>{
+                                    try {
+                                        await fetchData("/user/logout","POST",{email:localStorage.getItem("email")},setIsLoggedIn);
+                                        setIsLoggedIn(false);
+                                        dispatch(loginReducer("LOGOUT"))
+                                        localStorage.setItem("isLoggedIn",false);
+                                        localStorage.setItem("isAdmin",false);
+                                        localStorage.removeItem("firstName");
+                                        localStorage.removeItem("lastName");
+                                        localStorage.removeItem("email");
+                                        localStorage.removeItem("avatar");
+                                        location.assign("/home")
+                                        removeCookie("json_token",{
+                                            expires:0,
+                                            path:"/"
+                                        })
+                                    } catch (error) {
+                                        console.log(error);
+                                    }
                                 }}><AiOutlineLogout /> logout</button>
                             ):(
                                 <>

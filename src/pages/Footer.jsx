@@ -3,6 +3,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram,FaTiktok,FaReddit,FaFacebook,FaWhatsapp } from "react-icons/fa";
 import {themeContext} from "../App"
 import { useContext } from "react";
+import ScrollToTopArrow from "./ScrollToTopArrow";
 export const Footer = () => {
     let {isDark,setIsDark} = useContext(themeContext);
     return (
@@ -29,6 +30,9 @@ export const Footer = () => {
                     <FaWhatsapp size={30} color={(isDark || JSON.parse(localStorage.getItem("isDark")))?"rgba(247, 238, 221, 0.5)":"rgb(33,37,41)"} className="m-1"/>
                 </button>
             </div>
+            <button className="btn" title="scroll to top" style={{position:"fixed",bottom:"20px",right:"20px"}} onClick={()=>window.scrollTo({top:0,left:0,behavior:"smooth"})}>
+                <ScrollToTopArrow/>
+            </button>
         </footer>
     )
 }

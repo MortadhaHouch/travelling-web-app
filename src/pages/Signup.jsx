@@ -12,6 +12,7 @@ import { IoIosWoman, IoMdLogIn } from "react-icons/io";
 import { LuUpload } from "react-icons/lu";
 import fileReading from "../../utils/fileReading";
 import sign from "jwt-encode"
+import Loading from "./Loading";
 export const Signup = () => {
     store.subscribe(()=>{
         console.log("local data store connected");
@@ -30,6 +31,7 @@ export const Signup = () => {
     let [cookie,setCookie,removeCookie] = useCookies(["json_token"]);
     // eslint-disable-next-line no-unused-vars
     let {isLoggedIn,setIsLoggedIn} = useContext(loginState);
+    let [isPending,startTransition] = useTransition();
     let dispatch = useDispatch();
     useEffect(()=>{
         setIsMale(isMale);
@@ -90,7 +92,7 @@ export const Signup = () => {
             }}>
                 <section className="w-75 h-75 d-flex justify-content-center align-items-center">
                     <form action="" className="w-75 h-75 d-flex flex-column justify-content-center align-items-center" onSubmit={(e)=>{
-                        handleSubmit(e)
+                        startTransition(()=>handleSubmit(e))
                     }}>
                         <div className="mb-3 w-75 d-flex flex-column justify-content-start align-items-center">
                             <label htmlFor="first_name" className={`form-label ${(isDark || JSON.parse(localStorage.getItem("isDark")))?"text-light":"text-dark"}`}>first name</label>
@@ -223,6 +225,11 @@ export const Signup = () => {
                         </button>
                     </form>
                 </section>
+                {
+                    isPending && (
+                        <Loading/>
+                    )
+                }
             </main>
         </>
     )

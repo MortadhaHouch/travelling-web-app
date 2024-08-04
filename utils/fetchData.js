@@ -1,4 +1,5 @@
 import sign from "jwt-encode"
+
 async function fetchData(url,method,body,setIsLoading){
     let requestMethod;
     let requestBody=null;
@@ -32,8 +33,7 @@ async function fetchData(url,method,body,setIsLoading){
             }
         });
         setIsLoading(true);
-        let response = await request.json();
-        return response;
+        return await request.json();
     } catch (error) {
         console.log(error);
     }finally{

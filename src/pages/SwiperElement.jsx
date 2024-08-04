@@ -46,7 +46,7 @@ export default function SwiperElement(props) {
                     }}><FaArrowRightLong/></button>
                 </div>
             {
-                props.images.map((item,index)=>{
+                props.images && props.images.map((item,index)=>{
                     return(
                         <SwiperSlide key={index}>
                             <>
@@ -71,7 +71,11 @@ export default function SwiperElement(props) {
                     )
                 })
             }
-                <img src={props.images[linkIndex]} alt="" className="background"/>
+            {
+                props.images &&(
+                    <img src={props.images[linkIndex]} alt="" className="background"/>
+                )
+            }
             </Swiper>
         </>
     )

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import "../App.css"
 import {fetchData} from "../../utils/fetchData"
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState, useTransition } from "react";
 import {useCookies} from "react-cookie"
 import {loginState, themeContext} from "../App"
 import {jwtDecode} from "jwt-decode"
@@ -11,14 +11,20 @@ import { loginReducer,checkIsAdmin } from "../../reducers/actions.js";
 import { store } from "../../reducers/store.js";
 import sign from "jwt-encode"
 import { IoMdLogIn } from "react-icons/io";
+import ChangeForm from "./ChangeForm.jsx";
+import Loading from "./Loading.jsx";
 export const Login = () => {
     let [isLoading,setIsLoading] = useState(false);
     let [email,setEmail] = useState("");
     let [password,setPassword] = useState("");
     let [emailError,setEmailError] = useState("");
     let [passwordError,setPasswordError] = useState("");
+    let [securityIssue,setSecurityIssue] = useState("");
     // eslint-disable-next-line no-unused-vars
     let [cookie,setCookie,removeCookie] = useCookies(["json_token"]);
+    let [isPending,startTransition] = useTransition();
+    let [successMessage,setSuccessMessage] = useState("");
+    let [errorMessage,setErrorMessage] = useState("");
     let dispatch = useDispatch();
     store.subscribe(()=>{
         console.log("local data store is connected");
@@ -54,6 +60,11 @@ export const Login = () => {
                 setIsAdmin(false);
                 dispatch(loginReducer("LOGOUT"));
             }
+            if(jwtDecode(response.token).security_error){
+                setSecurityIssue(jwtDecode(response.token).security_error);
+            }else{
+                setSecurityIssue("");
+            }
             if(!jwtDecode(response.token).password_error && !jwtDecode(response.token).email_error){
                 setIsLoggedIn(true);
                 dispatch(loginReducer("LOGIN"));
@@ -86,6 +97,18 @@ export const Login = () => {
             console.log(error);
         }
     }
+    useEffect(()=>{
+        setSecurityIssue(securityIssue);
+        return ()=> setSecurityIssue("");
+    },[securityIssue])
+    useEffect(()=>{
+        setSuccessMessage(successMessage);
+        return ()=> setSuccessMessage("");
+    },[successMessage])
+    useEffect(()=>{
+        setErrorMessage(errorMessage);
+        return ()=> setErrorMessage("");
+    },[errorMessage])
     let {isDark,setIsDark} = useContext(themeContext);
     return (
         <>
@@ -147,8 +170,43 @@ export const Login = () => {
                                     </>
                                 ):""
                             }
+                            {
+                                securityIssue &&(
+                                    <>
+                                        <p style={{
+                                            color:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#F2F1EB":"#070F2B"
+                                        }}>Was that you?</p>
+                                        <button className="btn btn-success" onClick={async()=>{
+                                            try {
+                                                let request = await fetchData("/user/login/success","POST",{success_message:"It was me"},setIsLoading);
+                                                setSuccessMessage(jwtDecode(response.token).success_message);
+                                            } catch (error) {
+                                                console.log(error);
+                                            }
+                                        }}>Yse It was me</button>
+                                        <button className="btn btn-danger" onClick={async()=>{
+                                            try {
+                                                let request = await fetchData("/user/login/failure","POST",{error_message:"It was not me"},setIsLoading);
+                                                setErrorMessage(jwtDecode(request.token).error_message);
+                                            } catch (error){
+                                                console.log(error);
+                                            }
+                                        }}>No it was not me</button>
+                                    </>
+                                )
+                            }
                         </div>
                     </form>
+                    {
+                        errorMessage && (
+                            <ChangeForm/>
+                        )
+                    }
+                    {
+                        isPending &&(
+                            <Loading/>
+                        )
+                    }
                 </section>
             </main>
         </>

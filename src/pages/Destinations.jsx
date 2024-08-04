@@ -35,7 +35,7 @@ export const Destinations = () => {
     },[destination])
     useEffect(()=>{
         setImages(TataouineImages)
-        gsapAnimationHandler(".item",{opacity:0,y:15,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
+        gsapAnimationHandler(".item",{opacity:0,y:-100,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
     },[])
     useEffect(()=>{
         setClassName(className)
@@ -44,7 +44,7 @@ export const Destinations = () => {
         <main className="d-flex flex-column justify-content-center align-items-center main-container" style={{
             backgroundColor:(isDark || JSON.parse(localStorage.getItem("isDark")))?"#070F2B":"#F2F1EB"
         }}>
-            <ul className="nav nav-tabs" id="myTab" role="tablist">
+            <ul className="nav nav-tabs horizontal" id="myTab" role="tablist">
                 <li className="nav-item" role="presentation">
                     <button
                         className="nav-link active"
@@ -57,7 +57,7 @@ export const Destinations = () => {
                         aria-selected="true"
                         onClick = {()=>{
                             setImages(TataouineImages);
-                            gsapAnimationHandler(".item",{opacity:0,y:15,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
+                            gsapAnimationHandler(".item",{opacity:0,y:-100,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
                         }}
                     >
                         Tataouine
@@ -75,7 +75,7 @@ export const Destinations = () => {
                         aria-selected="false"
                         onClick = {()=>{
                             setImages(MahdiaImages)
-                            gsapAnimationHandler(".item",{opacity:0,y:15,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
+                            gsapAnimationHandler(".item",{opacity:0,y:-100,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
                         }}
                     >
                         Mahdia
@@ -93,7 +93,7 @@ export const Destinations = () => {
                         aria-selected="Tunis"
                         onClick = {()=>{
                             setImages(TunisImages)
-                            gsapAnimationHandler(".item",{opacity:0,y:15,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
+                            gsapAnimationHandler(".item",{opacity:0,y:-100,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
                         }}
                     >
                         Tunis
@@ -111,7 +111,7 @@ export const Destinations = () => {
                         aria-selected="false"
                         onClick = {()=>{
                             setImages(NabeulImages)
-                            gsapAnimationHandler(".item",{opacity:0,y:15,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
+                            gsapAnimationHandler(".item",{opacity:0,y:-100,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
                         }}
                     >
                         Nabeul
@@ -129,7 +129,7 @@ export const Destinations = () => {
                         aria-selected="false"
                         onClick = {()=>{
                             setImages(SousseImages)
-                            gsapAnimationHandler(".item",{opacity:0,y:15,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
+                            gsapAnimationHandler(".item",{opacity:0,y:-100,filter:"blur(15px)",},{opacity:1,y:0,filter:"blur(0px)"},true)
                         }}
                     >
                         Sousse

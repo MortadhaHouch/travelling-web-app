@@ -22,6 +22,21 @@
     background-color:var(--selection-background-color);
     backdrop-filter: blur(20px);
 }
+*::-webkit-scrollbar{
+    width: 10px;
+}
+*::-webkit-scrollbar-track{
+    border-radius: 4px;
+    width: 10px;
+}
+*::-webkit-scrollbar-thumb{
+    width: 8px;
+    background-color: #9e5eff;
+    border-radius: 4px;
+}
+*::-webkit-scrollbar-thumb:active{
+    background-color: #270061;
+}
 html{
     scroll-behavior: smooth;
 }
@@ -108,7 +123,8 @@ ul.aside{
     align-items: center;
     width: 250px;
     height: 100vh;
-    z-index: 5;
+    z-index: 10;
+    gap: 0;
     background-color: rgba(108, 108, 108, 0.5);
     backdrop-filter: blur(10px);
 }
@@ -118,12 +134,17 @@ ul.aside.shown{
 ul.aside:not(.shown){
     left: -250px;
 }
-ul.aside button.tooltip-arrow{
+ul.aside.vertical button.tooltip-arrow{
     position: absolute;
     top: 100px;
     right: -50px;
 }
-ul.aside li{
+ul.aside.vertical button.tooltip-arrow{
+    position: absolute;
+    top: 100px;
+    right: -50px;
+}
+ul.aside.vertical li{
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -131,20 +152,20 @@ ul.aside li{
     align-items: center;
     position: relative;
 }
-ul.aside li:hover{
+ul.aside.vertical li:hover{
     padding-left: 20px;
 }
-ul.aside li button{
+ul.aside.vertical li button{
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
 }
-ul.aside li button.active{
+ul.aside.vertical li button.active{
     border-radius: 20px 0 0 20px;
 }
-ul.aside li:has(button.active)::before {
+ul.aside.vertical li:has(button.active)::before {
     position: absolute;
     top: -30px;
     right: 0px;
@@ -155,7 +176,7 @@ ul.aside li:has(button.active)::before {
     box-shadow: 15px 15px 0px 0px white;
     clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
 }
-ul.aside li:has(button.active)::after{
+ul.aside.vertical li:has(button.active)::after{
     position: absolute;
     bottom: -30px;
     right: 0px;
@@ -165,6 +186,10 @@ ul.aside li:has(button.active)::after{
     border-radius: 50%;
     box-shadow: 15px -15px 0px 0px white;
     clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+}
+ul.nav.horizontal li.nav-item button.nav-link.active{
+    transform: translateY(-10px);
+    border-radius: 15px;
 }
 main{
     padding-block: 100px;
@@ -190,7 +215,7 @@ main form div textarea{
     resize: none;
     opacity: .95;
 }
-main.loading{
+div.loading{
     width: 100vw;
     height: 100vh;
     position: fixed;
@@ -203,13 +228,32 @@ main.loading{
     align-items: center;
     z-index: 100;
 }
-main.loading.paused{
-    clip-path: circle(0% at 50% 50%);
-    pointer-events: none;
+div.loading div{
+    width: 300px;
+    height: 300px;
+    animation-name: rotate;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-duration: 7.5s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-main.loading.played{
-    clip-path: circle(100% at 50% 50%);
-    pointer-events: all;
+div.loading div span{
+    width: 30px;
+    height: 10px;
+    position: absolute;
+}
+@keyframes rotate{
+    0%{
+        transform:rotateZ(0deg);
+    }
+    0%{
+        transform:rotateZ(360deg);
+    }
+}
+div.loading div.circle{
+    margin-right: -10px;
 }
 main div.tab-content div.tab-pane{
     display: flex;
@@ -451,7 +495,7 @@ footer{
     position: fixed;
     bottom: 0;
     left: 0;
-    z-index: 100;
+    z-index: 5;
     background-color: rgba(247, 238, 221, 0.5);
     backdrop-filter: blur(10px);
 }
@@ -515,7 +559,7 @@ section.cards-container div.user-card-item{
     flex-direction: column;
     gap: 5px;
     border-radius: 10px;
-    width: 300px;
+    width: 400px;
     height: fit-content;
     box-shadow: -2px -2px 4px 2px rgba(0, 0, 0, 0.25),2px 2px 4px 2px rgba(255, 255, 255, 0.05);
     padding:15px;
@@ -564,12 +608,13 @@ section.feedback-cards-container div.feedback-card{
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
-    padding: 10px;
+    padding: 20px;
     border-radius: 15px;
     width: 300px;
     height: fit-content;
-    min-height: 200px;
+    min-height: 250px;
     max-height: 400px;
+    position: relative;
 }
 section.feedback-cards-container div.feedback-card div{
     width: 100%;
@@ -749,11 +794,13 @@ div.item button svg.active path{
 section.dialog{
     width: 100vw;
     height: 100vh;
+    overflow-y: scroll;
     backdrop-filter: blur(15px);
     position: fixed;
     top: 0;
     left: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 50;
@@ -764,9 +811,9 @@ section.dialog.shown{
 section.dialog.hidden{
     clip-path: circle(0% at 50% 50%);
 }
-section.dialog div{
-    width: 40%;
-    height: fit-content;
+section.dialog > div{
+    width: 60%;
+    overflow-y: scroll;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -783,7 +830,7 @@ section.dialog div button.remove-button{
 }
 section.dialog div button.close-button{
     position: absolute;
-    top: 30px;
+    top: 100px;
     right: 15px;
     background-color: rgb(255, 0, 0);
 }
@@ -851,7 +898,7 @@ div.notification:not(.hidden){
     right:0;
 }
 div.notification.hidden{
-    right:-200px;
+    right:-300px;
 }
 div.dropdown-menu{
     cursor: pointer;
@@ -878,5 +925,15 @@ div.text-box{
 div.text-box.shown{
     transform: scaleY(1) !important;
     transform-origin:top;
-
+}
+label.active{
+    transform: scale(.75) translateY(-10px) translateX(-10px);
+    background-color: white;
+    border-radius: 5px;
+    text-align: center;
+}
+label:not(.active){
+    transform: scale(1) translateY(0px) translateX(0);
+    background-color: transparent;
+    border-radius: 0;
 }
